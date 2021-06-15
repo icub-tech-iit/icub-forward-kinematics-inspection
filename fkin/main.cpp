@@ -15,11 +15,68 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
+#include <iCub/iKin/iKinFwd.h>
+#include <yarp/dev/PolyDriver.h>
+#include <yarp/os/LogStream.h>
+#include <yarp/os/Network.h>
+#include <yarp/os/PeriodicThread.h>
+#include <yarp/os/RFModule.h>
+
 #include <iostream>
 
+using namespace std;
+using namespace yarp::os;
+using namespace yarp::dev;
 
-int main(int argc, const char* argv[]) { 
+class KinThread : public PeriodicThread {
+ protected:
+  PolyDriver jointsClient;
+  IEncoders *iEnc;
 
-    std::cout << "Hello main" << std::endl;
-    return 0; 
+ public:
+  KinThread() : PeriodicThread(0.1) {}
+  bool threadInit() { return true; }
+  void run() {}
+};
+
+class KinModule : public RFModule {
+ protected:
+  KinThread thr;
+
+ public:
+  bool configure(yarp::os::ResourceFinder &rf) {
+    thr.setPeriod(0.1);
+
+    return thr.start();
+  }
+  
+  bool close(){
+      thr.stop();
+      return true;
+  }
+  
+  double getPeriod() {
+      return 0.1;
+  }
+
+  bool updateModule() {
+      yInfo() << "KinModule is running correctly ...";
+      return true;
+  }
+
+};
+
+int main(int argc, char *argv[]) {
+  Network yarp;
+  if (!yarp.checkNetwork()) {
+    yError() << "YARP doesn't seem to be available";
+    return EXIT_FAILURE;
+  }
+
+    ResourceFinder rf;
+    rf.configure(argc, argv);
+
+    KinModule mod;
+
+  return mod.runModule();
 }
