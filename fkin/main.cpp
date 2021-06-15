@@ -24,9 +24,9 @@
 
 #include <iostream>
 
-using namespace std;
 using namespace yarp::os;
 using namespace yarp::dev;
+using namespace iCub::iKin;
 
 class KinThread : public PeriodicThread {
  protected:
@@ -34,9 +34,10 @@ class KinThread : public PeriodicThread {
   IEncoders *iEnc;
 
  public:
-  KinThread() : PeriodicThread(0.1) {}
-  bool threadInit() { return true; }
-  void run() {}
+  KinThread() : PeriodicThread(0.01) {}
+  bool threadInit() { 
+            return true; }
+  void run() { }
 };
 
 class KinModule : public RFModule {
@@ -45,25 +46,22 @@ class KinModule : public RFModule {
 
  public:
   bool configure(yarp::os::ResourceFinder &rf) {
-    thr.setPeriod(0.1);
+    thr.setPeriod(0.01);
 
     return thr.start();
   }
-  
-  bool close(){
-      thr.stop();
-      return true;
+
+  bool close() {
+    thr.stop();
+    return true;
   }
-  
-  double getPeriod() {
-      return 0.1;
-  }
+
+  double getPeriod() { return 0.01; }
 
   bool updateModule() {
-      yInfo() << "KinModule is running correctly ...";
-      return true;
+    yInfo() << "KinModule is running correctly ...";
+    return true;
   }
-
 };
 
 int main(int argc, char *argv[]) {
@@ -73,10 +71,10 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
 
-    ResourceFinder rf;
-    rf.configure(argc, argv);
+  ResourceFinder rf;
+  rf.configure(argc, argv);
 
-    KinModule mod;
+  KinModule mod;
 
   return mod.runModule();
 }
