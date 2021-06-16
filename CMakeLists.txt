@@ -6,6 +6,7 @@
 
 cmake_minimum_required(VERSION 3.12)
 set(CMAKE_CXX_STANDARD 17)
+
 project(fkin)
 
 find_package(ICUBcontrib REQUIRED)
@@ -15,9 +16,6 @@ list(APPEND CMAKE_MODULE_PATH ${ICUBCONTRIB_MODULE_PATH})
 
 include(ICUBcontribHelpers)
 include(ICUBcontribOptions)
-
-include_directories(${PROJECT_SOURCE_DIR}/src)
-
 
 icubcontrib_set_default_prefix()
 

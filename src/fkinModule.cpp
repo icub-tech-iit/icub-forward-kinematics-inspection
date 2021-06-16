@@ -46,13 +46,13 @@ bool KinThread::threadInit() {
   optTorso.put("remote", "/icubSim/torso");
   optTorso.put("local", "/logger");
   
-  if (!driverTorso.open(optTorso)) {
-    yError() << "Unable to connect to /icubSim/torso";
+  if (!driverArm.open(optArm)) {
+    yError() << "Unable to connect to /icubSim/left_arm";
     return false;
   }
 
-  if (!driverArm.open(optArm)) {
-    yError() << "Unable to connect to /icubSim/left_arm";
+  if (!driverTorso.open(optTorso)) {
+    yError() << "Unable to connect to /icubSim/torso";
     return false;
   }
 
@@ -74,7 +74,6 @@ void KinThread::run() {
 
   torsoH = getHfromEncoders<iCubTorso>(iTorsoEnc, torso);
   armH = getHfromEncoders<iCubArm>(iArmEnc, arm);
-
 }
 
 

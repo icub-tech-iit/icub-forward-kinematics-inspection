@@ -61,7 +61,6 @@ class KinThread : public PeriodicThread {
   PolyDriver driverArm;
   PolyDriver driverTorso;
 
-
  protected:
   iCubArm arm;
   yarp::sig::Vector armEncValues;
