@@ -33,18 +33,29 @@ using namespace iCub::iKin;
 class KinThread : public PeriodicThread {
 
  public:
-  KinThread();
+  KinThread(double period);
   ~KinThread();
 
   bool threadInit();
   void run();
 
-  IEncoders *iEnc;
+  template <class T>
+  yarp::sig::Matrix getHfromEncoders(const IEncoders *encs, T limb);
+
+  IEncoders *iArmEnc;
+  IEncoders *iTorsoEnc;
   PolyDriver jointsClient;
 
  protected:
   iCubArm arm;
-  std::vector<double> encodersValues;
+  yarp::sig::Vector armEncValues;
+  yarp::sig::Vector armActualValues;
+  yarp::sig::Matrix armH;
+
+  iCubTorso torso;
+  yarp::sig::Vector torsoEncValues;
+  yarp::sig::Vector torsoActualValues;
+  yarp::sig::Matrix torsoH;
 };
 
 
@@ -55,7 +66,6 @@ class KinModule : public RFModule {
 
   bool configure(yarp::os::ResourceFinder &rf);
   bool close();
-  double getPeriod();
   bool updateModule();
 
  private:

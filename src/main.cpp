@@ -29,5 +29,5 @@ int main(int argc, char *argv[]) {
   rf.configure(argc, argv);
 
   KinModule mod;
-  return mod.runModule(rf);
+  return mod.configure(rf);
 }
