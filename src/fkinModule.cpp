@@ -60,25 +60,13 @@ bool KinThread::threadInit() {
 void KinThread::run() {
   yInfo() << "KinThread is running correctly ...";
 
- 
   torsoH = getHfromEncoders<iCubTorso>(iTorsoEnc, torso);
-
   armH = getHfromEncoders<iCubArm>(iArmEnc, arm);
 
-
-  // Read Torso Encoders
-  iTorsoEnc->getEncoders(torsoEncValues.data());
-
-  for (auto &e : torsoEncValues) {
-    e = iCub::ctrl::CTRL_DEG2RAD * e;
-  }
-
-  torsoActualValues = arm.setAng(torsoEncValues);
-  torsoH = arm.getH(torsoActualValues);
-
 }
-template <class T>
-yarp::sig::Matrix getHfromEncoders(const IEncoders *encs, const T& limb) {
+
+/* template <class T>
+yarp::sig::Matrix getHfromEncoders(IEncoders *encs, const T& limb) {
   yarp::sig::Vector encValues;
   yarp::sig::Vector actualValues;
 
@@ -91,9 +79,9 @@ yarp::sig::Matrix getHfromEncoders(const IEncoders *encs, const T& limb) {
   }
 
   actualValues = limb.setAng(encValues);
-  return arm.getH(actualValues);
+  return limb.getH(actualValues);
 }
-
+ */
 
 /**
  * Definitions of KinModule functions

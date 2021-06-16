@@ -40,7 +40,21 @@ class KinThread : public PeriodicThread {
   void run();
 
   template <class T>
-  yarp::sig::Matrix getHfromEncoders(const IEncoders *encs, T limb);
+  yarp::sig::Matrix getHfromEncoders(IEncoders *encs, T& limb) {
+    yarp::sig::Vector encValues;
+    yarp::sig::Vector actualValues;
+
+    // Read encoders
+    encs->getEncoders(encValues.data());
+
+    // convert each element in radians
+    for (auto &e : encValues) {
+      e = iCub::ctrl::CTRL_DEG2RAD * e;
+    }
+    
+    actualValues = limb.setAng(encValues);
+    return limb.getH(actualValues);
+ }
 
   IEncoders *iArmEnc;
   IEncoders *iTorsoEnc;
