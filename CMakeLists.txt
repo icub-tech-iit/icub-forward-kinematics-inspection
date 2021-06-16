@@ -5,7 +5,7 @@
 # BSD-3-Clause license. See the accompanying LICENSE file for details.
 
 cmake_minimum_required(VERSION 3.12)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 project(fkin)
 
 find_package(ICUBcontrib REQUIRED)
@@ -15,6 +15,9 @@ list(APPEND CMAKE_MODULE_PATH ${ICUBCONTRIB_MODULE_PATH})
 
 include(ICUBcontribHelpers)
 include(ICUBcontribOptions)
+
+include_directories(${PROJECT_SOURCE_DIR}/src)
+
 
 icubcontrib_set_default_prefix()
 
@@ -26,7 +29,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE YARP::YARP_os
                                               ICUB::ctrlLib
                                               ICUB::iKin)
 
-target_sources(${PROJECT_NAME} PRIVATE main.cpp)
+target_sources(${PROJECT_NAME} PRIVATE src/main.cpp 
+                                       src/fkinModule.cpp 
+                                       src/fkinModule.h)
 
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 

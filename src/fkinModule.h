@@ -15,6 +15,8 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
  */
+
+
 #include <iCub/iKin/iKinFwd.h>
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/os/LogStream.h>
@@ -29,52 +31,33 @@ using namespace yarp::dev;
 using namespace iCub::iKin;
 
 class KinThread : public PeriodicThread {
- protected:
-  PolyDriver jointsClient;
-  IEncoders *iEnc;
 
  public:
-  KinThread() : PeriodicThread(0.01) {}
-  bool threadInit() { 
-            return true; }
-  void run() { }
+  KinThread();
+  ~KinThread();
+
+  bool threadInit();
+  void run();
+
+  IEncoders *iEnc;
+  PolyDriver jointsClient;
+
+ protected:
+  iCubArm arm;
+  std::vector<double> encodersValues;
 };
+
 
 class KinModule : public RFModule {
- protected:
-  KinThread thr;
-
  public:
-  bool configure(yarp::os::ResourceFinder &rf) {
-    thr.setPeriod(0.01);
+  KinModule();
+  ~KinModule();
 
-    return thr.start();
-  }
+  bool configure(yarp::os::ResourceFinder &rf);
+  bool close();
+  double getPeriod();
+  bool updateModule();
 
-  bool close() {
-    thr.stop();
-    return true;
-  }
-
-  double getPeriod() { return 0.01; }
-
-  bool updateModule() {
-    yInfo() << "KinModule is running correctly ...";
-    return true;
-  }
+ private:
+  std::unique_ptr<KinThread> thr;
 };
-
-int main(int argc, char *argv[]) {
-  Network yarp;
-  if (!yarp.checkNetwork()) {
-    yError() << "YARP doesn't seem to be available";
-    return EXIT_FAILURE;
-  }
-
-  ResourceFinder rf;
-  rf.configure(argc, argv);
-
-  KinModule mod;
-
-  return mod.runModule();
-}
