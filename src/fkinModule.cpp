@@ -36,18 +36,30 @@ KinThread::~KinThread() {}
 
 bool KinThread::threadInit() {
   Property optArm;
+  Property optTorso;
+
   optArm.put("device", "remote_controlboard");
   optArm.put("remote", "/icubSim/left_arm");
   optArm.put("local", "/logger");
 
-  if (!jointsClient.open(optArm)) {
+  optTorso.put("device", "remote_controlboard");
+  optTorso.put("remote", "/icubSim/torso");
+  optTorso.put("local", "/logger");
+  
+  if (!driverTorso.open(optTorso)) {
+    yError() << "Unable to connect to /icubSim/torso";
+    return false;
+  }
+
+  if (!driverArm.open(optArm)) {
     yError() << "Unable to connect to /icubSim/left_arm";
     return false;
   }
 
   // open views
   bool ok = true;
-  ok = ok && jointsClient.view<IEncoders>(iArmEnc);
+  ok = ok && driverTorso.view<IEncoders>(iTorsoEnc);
+  ok = ok && driverArm.view<IEncoders>(iArmEnc);
 
   if (!ok) {
     yError() << "Unable to open views";
@@ -65,23 +77,6 @@ void KinThread::run() {
 
 }
 
-/* template <class T>
-yarp::sig::Matrix getHfromEncoders(IEncoders *encs, const T& limb) {
-  yarp::sig::Vector encValues;
-  yarp::sig::Vector actualValues;
-
- // Read encoders
-  encs->getEncoders(encValues.data());
-
-  // convert each element in radians
-  for (auto &e : encValues) {
-    e = iCub::ctrl::CTRL_DEG2RAD * e;
-  }
-
-  actualValues = limb.setAng(encValues);
-  return limb.getH(actualValues);
-}
- */
 
 /**
  * Definitions of KinModule functions

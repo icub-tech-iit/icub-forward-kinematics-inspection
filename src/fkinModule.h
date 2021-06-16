@@ -51,14 +51,16 @@ class KinThread : public PeriodicThread {
     for (auto &e : encValues) {
       e = iCub::ctrl::CTRL_DEG2RAD * e;
     }
-    
+
     actualValues = limb.setAng(encValues);
     return limb.getH(actualValues);
  }
 
   IEncoders *iArmEnc;
   IEncoders *iTorsoEnc;
-  PolyDriver jointsClient;
+  PolyDriver driverArm;
+  PolyDriver driverTorso;
+
 
  protected:
   iCubArm arm;
