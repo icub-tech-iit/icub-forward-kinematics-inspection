@@ -22,12 +22,12 @@ KinThread::KinThread(double period)
     armEncValues(),
     torsoEncValues() {
   yInfo() << "KinThread constructor";
-
   arm.releaseLink(0);
   arm.releaseLink(1);
   arm.releaseLink(2);
   arm.setAllConstraints(false);
-  arm.setAng(yarp::math::zeros(arm.getDOF()));
+  torsoEncValues.resize(3);
+  armEncValues.resize(arm.getDOF());
 }
 
 KinThread::~KinThread() {}
@@ -38,11 +38,11 @@ bool KinThread::threadInit() {
 
   optArm.put("device", "remote_controlboard");
   optArm.put("remote", "/icubSim/left_arm");
-  optArm.put("local", "/logger");
+  optArm.put("local", "/logger/left_arm");
 
   optTorso.put("device", "remote_controlboard");
   optTorso.put("remote", "/icubSim/torso");
-  optTorso.put("local", "/logger");
+  optTorso.put("local", "/logger/torso");
   
   if (!driverArm.open(optArm)) {
     yError() << "Unable to connect to /icubSim/left_arm";
