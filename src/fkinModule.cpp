@@ -1,33 +1,31 @@
-/*
- * Copyright (C) 2006-2021 Istituto Italiano di Tecnologia (IIT)
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
- */
+/******************************************************************************
+ *                                                                            *
+ * Copyright (C) 2021 Fondazione Istituto Italiano di Tecnologia (IIT)        *
+ * All Rights Reserved.                                                       *
+ *                                                                            *
+ ******************************************************************************/
 
+#include <utility>
+#include <yarp/os/LogStream.h>
+#include <yarp/os/Property.h>
+#include <yarp/sig/Matrix.h>
+#include <yarp/math/Math.h>
+#include <iCub/ctrl/math.h>
 #include "fkinModule.h"
 
 /**
  * Definitions of KinThread functions
  */
 KinThread::KinThread(double period)
-  : PeriodicThread(period),
+  : yarp::os::PeriodicThread(period),
     arm("left"),
     armEncValues(),
-    armH(yarp::math::eye(4, 4)) {
+    torsoEncValues() {
   yInfo() << "KinThread constructor";
 
+  arm.releaseLink(0);
+  arm.releaseLink(1);
+  arm.releaseLink(2);
   arm.setAllConstraints(false);
   arm.setAng(yarp::math::zeros(arm.getDOF()));
 }
@@ -35,8 +33,8 @@ KinThread::KinThread(double period)
 KinThread::~KinThread() {}
 
 bool KinThread::threadInit() {
-  Property optArm;
-  Property optTorso;
+  yarp::os::Property optArm;
+  yarp::os::Property optTorso;
 
   optArm.put("device", "remote_controlboard");
   optArm.put("remote", "/icubSim/left_arm");
@@ -53,16 +51,19 @@ bool KinThread::threadInit() {
 
   if (!driverTorso.open(optTorso)) {
     yError() << "Unable to connect to /icubSim/torso";
+    driverArm.close();
     return false;
   }
 
   // open views
   bool ok = true;
-  ok = ok && driverTorso.view<IEncoders>(iTorsoEnc);
-  ok = ok && driverArm.view<IEncoders>(iArmEnc);
+  ok = ok && driverTorso.view<yarp::dev::IEncoders>(iTorsoEnc);
+  ok = ok && driverArm.view<yarp::dev::IEncoders>(iArmEnc);
 
   if (!ok) {
     yError() << "Unable to open views";
+    driverArm.close();
+    driverTorso.close();
     return false;
   }
 
@@ -72,8 +73,24 @@ bool KinThread::threadInit() {
 void KinThread::run() {
   yInfo() << "KinThread is running correctly ...";
 
-  torsoH = getHfromEncoders<iCubTorso>(iTorsoEnc, torso);
-  armH = getHfromEncoders<iCubArm>(iArmEnc, arm);
+  iTorsoEnc->getEncoders(torsoEncValues.data());
+  iArmEnc->getEncoders(armEncValues.data());
+
+  torsoEncValues *= iCub::ctrl::CTRL_DEG2RAD;
+  armEncValues *= iCub::ctrl::CTRL_DEG2RAD;
+
+  std::swap(torsoEncValues[0], torsoEncValues[2]);
+  auto ang = yarp::math::cat(torsoEncValues, armEncValues);
+  auto H = arm.getH(ang);
+
+  yInfo() << H.toString(3, 3);
+}
+
+void KinThread::threadRelease() {
+  yInfo() << "KinThread is shutting down...";
+
+  driverArm.close();
+  driverTorso.close();
 }
 
 
@@ -96,6 +113,10 @@ bool KinModule::close() {
 
   thr->stop();
   return true;
+}
+
+double KinModule::getPeriod() {
+  return 1.;
 }
 
 bool KinModule::updateModule() {
