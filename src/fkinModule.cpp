@@ -26,8 +26,6 @@ KinThread::KinThread(double period)
   arm.releaseLink(1);
   arm.releaseLink(2);
   arm.setAllConstraints(false);
-  torsoEncValues.resize(3);
-  armEncValues.resize(arm.getDOF());
 }
 
 KinThread::~KinThread() {}
@@ -66,6 +64,13 @@ bool KinThread::threadInit() {
     driverTorso.close();
     return false;
   }
+
+  int nAxes;
+  iTorsoEnc->getAxes(&nAxes);
+  torsoEncValues.resize(nAxes);
+  
+  iArmEnc->getAxes(&nAxes);
+  armEncValues.resize(nAxes);
 
   return true;
 }
