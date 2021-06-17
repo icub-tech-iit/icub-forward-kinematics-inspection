@@ -3,8 +3,10 @@ A study on the computation of the forward kinematics of iCub's arm, to inspect p
 
 ### ⚙ Build the project
 ```console
-cd /workspace/study-improve-head-edpr/fkin
-cmake -S . -B build
-cmake --build build
-cmake --install build
+cd /workspace/icub/forward-kinematics-inspection
+mkdir build && cd build
+cmake ..
+make && make install
 ```
+ ### Launch the application
+ If you ran `make install`, launch the project with `fkin` in a terminal.
