@@ -7,7 +7,7 @@ We make use of [Gitpod Cloud IDE](https://gitpod.io) as infrastructure:
 - Learn how to deal with our [Gitpod-enabled repositories](https://github.com/robotology/community/discussions/459).
 - Finally, click on the badge below to launch the Gitpod workspace!
   
-  [![](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/icub-tech-iit/study-improve-head-edpr/tree/code)
+  [![](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/mfussi66/icub-forward-kinematics-inspection)
 
 ### ⚙ Build the project
 ```console
