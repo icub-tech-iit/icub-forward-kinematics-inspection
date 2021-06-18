@@ -5,22 +5,26 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <utility>
+#include "fkinModule.h"
+
+#include <iCub/ctrl/math.h>
+#include <yarp/math/Math.h>
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
 #include <yarp/sig/Matrix.h>
-#include <yarp/math/Math.h>
-#include <iCub/ctrl/math.h>
-#include "fkinModule.h"
+
+#include <utility>
 
 /**
  * Definitions of KinThread functions
  */
 KinThread::KinThread(double period)
-  : yarp::os::PeriodicThread(period),
-    arm("left"),
-    armEncValues(),
-    torsoEncValues() {
+    : yarp::os::PeriodicThread(period),
+      arm("left"),
+      armEncValues(),
+      torsoEncValues(),
+      kinDynCompute(),
+      model() {
   yInfo() << "KinThread constructor";
   arm.releaseLink(0);
   arm.releaseLink(1);
@@ -41,7 +45,7 @@ bool KinThread::threadInit() {
   optTorso.put("device", "remote_controlboard");
   optTorso.put("remote", "/icubSim/torso");
   optTorso.put("local", "/logger/torso");
-  
+
   if (!driverArm.open(optArm)) {
     yError() << "Unable to connect to /icubSim/left_arm";
     return false;
@@ -68,9 +72,34 @@ bool KinThread::threadInit() {
   int nAxes;
   iTorsoEnc->getAxes(&nAxes);
   torsoEncValues.resize(nAxes);
-  
+
   iArmEnc->getAxes(&nAxes);
   armEncValues.resize(nAxes);
+
+  std::vector<std::string> axesList;
+  axesList.push_back("torso_pitch");
+  axesList.push_back("torso_roll");
+  axesList.push_back("torso_yaw");
+
+  // Left arm
+  axesList.push_back("l_shoulder_pitch");
+  axesList.push_back("l_shoulder_roll");
+  axesList.push_back("l_shoulder_yaw");
+  axesList.push_back("l_elbow");
+  axesList.push_back("l_wrist_prosup");
+  axesList.push_back("l_wrist_pitch");
+  axesList.push_back("l_wrist_yaw");
+
+  iDynTree::ModelLoader mdlLoader;
+  std::string modelPath = "/home/mfussi/.local/share/iCub/robots/iCubGenova02/model.urdf";
+  ok = mdlLoader.loadReducedModelFromFile(modelPath, axesList);
+  ok = ok && kinDynCompute.loadRobotModel(mdlLoader.model());
+  model = kinDynCompute.model();
+
+  if (!ok) {
+    yError() << "Unable to open model " << modelPath;
+    return ok;
+  }
 
   return true;
 }
@@ -86,9 +115,21 @@ void KinThread::run() {
 
   std::swap(torsoEncValues[0], torsoEncValues[2]);
   auto ang = yarp::math::cat(torsoEncValues, armEncValues);
-  auto H = arm.getH(ang);
 
-  yInfo() << H.toString(3, 3);
+  dynEncValues = ang.subVector(0, 9);
+
+  kinDynCompute.setJointPos(dynEncValues);
+
+  auto DynH = kinDynCompute.getRelativeTransform("torso_1", "l_hand");
+  auto KinH = arm.getH(ang);
+
+  yInfo() << "----- iKin H Matrix -----";
+  yInfo() << "\n" << KinH.toString(3, 3);
+
+  yInfo() << "----- iDyn H Matrix -----";
+  yInfo() << "\n" << DynH.toString();
+
+  yInfo() << "-------------------------";
 }
 
 void KinThread::threadRelease() {
@@ -98,6 +139,12 @@ void KinThread::threadRelease() {
   driverTorso.close();
 }
 
+bool KinThread::loadIDynModelFromUrdf(const std::string& filename,
+                                      iDynTree::Model& model) {
+  bool result = true;
+
+  return result;
+}
 
 /**
  * Definitions of KinModule functions
@@ -105,7 +152,7 @@ void KinThread::threadRelease() {
 KinModule::KinModule() : RFModule() {}
 KinModule::~KinModule() {}
 
-bool KinModule::configure(yarp::os::ResourceFinder &rf) {
+bool KinModule::configure(yarp::os::ResourceFinder& rf) {
   yInfo() << "Port configuration in progress...";
 
   thr = std::make_unique<KinThread>(0.01);
@@ -120,9 +167,7 @@ bool KinModule::close() {
   return true;
 }
 
-double KinModule::getPeriod() {
-  return 1.;
-}
+double KinModule::getPeriod() { return 1.; }
 
 bool KinModule::updateModule() {
   yInfo() << "KinModule is running correctly...";

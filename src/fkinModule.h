@@ -5,6 +5,10 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <iDynTree/ModelIO/ModelLoader.h>
+#include <iDynTree/Model/Model.h>
+#include <iDynTree/KinDynComputations.h>
+#include <iDynTree/Model/Link.h>
 #include <iCub/iKin/iKinFwd.h>
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/os/LogStream.h>
@@ -16,25 +20,48 @@
 #include <memory>
 #include <iostream>
 
+/**
+ * @brief 
+ * 
+ */
 class KinThread : public yarp::os::PeriodicThread {
 
  public:
+ /**
+  * @brief Construct a new Kin Thread object. Releases the torso links and sets
+  * all the constraints to false.
+  * 
+  * @param period The thread spinning period.
+  */
   KinThread(double period);
+
+  /**
+   * @brief Default destructor of the KinThread object.
+   */
   ~KinThread();
 
+/**
+ * @brief Initialises the KinThread by opening the ports 
+ * associated to torso and limb. Upon opening, it resizes the encoder vectors.
+ * @return true on success, false otherwise.
+ */
   bool threadInit() override;
   void run() override;
   void threadRelease() override;
+  bool loadIDynModelFromUrdf(const std::string& filename, 
+                             iDynTree::Model& model);
 
+ protected:
   yarp::dev::IEncoders *iArmEnc;
   yarp::dev::IEncoders *iTorsoEnc;
   yarp::dev::PolyDriver driverArm;
   yarp::dev::PolyDriver driverTorso;
-
- protected:
-  iCub::iKin::iCubArm arm;
   yarp::sig::Vector armEncValues;
   yarp::sig::Vector torsoEncValues;
+  iCub::iKin::iCubArm arm;
+  iDynTree::KinDynComputations kinDynCompute;
+  iDynTree::Model model;
+  iDynTree::VectorDynSize dynEncValues;
 };
 
 

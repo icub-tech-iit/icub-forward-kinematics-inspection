@@ -13,6 +13,7 @@ project(fkin)
 find_package(ICUBcontrib REQUIRED)
 find_package(YARP REQUIRED COMPONENTS os sig math)
 find_package(ICUB REQUIRED COMPONENTS ctrlLib iKin)
+find_package(iDynTree REQUIRED)
 list(APPEND CMAKE_MODULE_PATH ${ICUBCONTRIB_MODULE_PATH})
 
 include(ICUBcontribHelpers)
@@ -26,7 +27,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE YARP::YARP_os
                                               YARP::YARP_sig
                                               YARP::YARP_math
                                               ICUB::ctrlLib
-                                              ICUB::iKin)
+                                              ICUB::iKin
+                                              ${iDynTree_LIBRARIES})
 
 target_sources(${PROJECT_NAME} PRIVATE src/main.cpp 
                                        src/fkinModule.cpp 
