@@ -123,11 +123,8 @@ void KinThread::run() {
   auto DynH = kinDynCompute.getRelativeTransform("torso_1", "l_hand");
   auto KinH = arm.getH(ang);
 
-  yInfo() << "----- iKin H Matrix -----";
-  yInfo() << "\n" << KinH.toString(3, 3);
-
-  yInfo() << "----- iDyn H Matrix -----";
-  yInfo() << "\n" << DynH.toString();
+  yInfo() <<  "----- iKin H Matrix -----\n" << KinH.toString(3, 3);
+  yInfo() << "----- iDyn H Matrix -----\n" << DynH.toString();
 
   yInfo() << "-------------------------";
 }
