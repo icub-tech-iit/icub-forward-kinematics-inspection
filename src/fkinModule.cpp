@@ -78,8 +78,8 @@ bool KinThread::threadInit() {
 
   std::vector<std::string> axesList;
   axesList.push_back("torso_pitch");
-  axesList.push_back("torso_roll");
   axesList.push_back("torso_yaw");
+  axesList.push_back("torso_roll");
 
   // Left arm
   axesList.push_back("l_shoulder_pitch");
@@ -116,6 +116,11 @@ void KinThread::run() {
   std::swap(torsoEncValues[0], torsoEncValues[2]);
   auto ang = yarp::math::cat(torsoEncValues, armEncValues);
 
+  yInfo() << "iDynTree data:: n_dofs: " << kinDynCompute.getNrOfDegreesOfFreedom() <<
+          " n_frames: " << kinDynCompute.getNrOfFrames() <<
+          " n_links: "  << kinDynCompute.getNrOfLinks() <<
+          " n_pos_coords: " << kinDynCompute.model().getNrOfPosCoords();
+
   dynEncValues = ang.subVector(0, 9);
 
   kinDynCompute.setJointPos(dynEncValues);
@@ -123,9 +128,9 @@ void KinThread::run() {
   auto DynH = kinDynCompute.getRelativeTransform("torso_1", "l_hand");
   auto KinH = arm.getH(ang);
 
-  yInfo() <<  "----- iKin H Matrix -----\n" << KinH.toString(3, 3);
-  yInfo() << "----- iDyn H Matrix -----\n" << DynH.toString();
-
+  yInfo() <<  "----- iKin H Transform -----\n" << KinH.toString(3, 3);
+  yInfo() << "----- iDyn H Transform -----\n" << DynH.getRotation().toString() 
+          << "pos: " << DynH.getPosition().toString();
   yInfo() << "-------------------------";
 }
 
