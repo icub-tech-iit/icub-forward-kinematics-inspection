@@ -20,4 +20,4 @@ make && make install
 ### 🔘 Run the project
 Running the project requires loading the URDF model of iCub 2.5, provided in the repository.
 
-To launch, run in a terminal `fkin --model icubGazeboSim/model.urdf`.
+To launch, move to the repository directory with `cd icub-forward-kinematic-inspection`, and run in a terminal `fkin --model model/model.urdf`.
