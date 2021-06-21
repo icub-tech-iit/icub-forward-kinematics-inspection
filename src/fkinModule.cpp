@@ -18,8 +18,7 @@
 /**
  * Definitions of KinThread functions
  */
-KinThread::KinThread(double period, const std::string& modelPath)
-    : yarp::os::PeriodicThread(period),
+KinThread::KinThread(double period, const std::string& modelPath, const std::vector<double>& joints) : yarp::os::PeriodicThread(period),
       arm("left_2.5"),
       armEncValues(),
       torsoEncValues(),
@@ -118,20 +117,23 @@ void KinThread::run() {
   std::swap(torsoEncValues[0], torsoEncValues[2]);
   auto ang = yarp::math::cat(torsoEncValues, armEncValues);
 
-  yInfo() << "iDynTree data:: n_dofs: " << kinDynCompute.getNrOfDegreesOfFreedom() <<
-          " n_frames: " << kinDynCompute.getNrOfFrames() <<
-          " n_links: "  << kinDynCompute.getNrOfLinks() <<
-          " n_pos_coords: " << kinDynCompute.model().getNrOfPosCoords();
+  yInfo() << "iDynTree data:: n_dofs: "
+          << kinDynCompute.getNrOfDegreesOfFreedom()
+          << " n_frames: " << kinDynCompute.getNrOfFrames()
+          << " n_links: " << kinDynCompute.getNrOfLinks()
+          << " n_pos_coords: " << kinDynCompute.model().getNrOfPosCoords();
 
   dynEncValues = ang.subVector(0, 9);
 
   kinDynCompute.setJointPos(dynEncValues);
 
-  auto DynH = kinDynCompute.getRelativeTransform("root_link", "l_hand_dh_frame");
+  auto DynH =
+      kinDynCompute.getRelativeTransform("root_link", "l_hand_dh_frame");
   auto KinH = arm.getH(ang);
 
-  yInfo() <<  "----- iKin H Transform -----\n" << KinH.toString(5, 3);
-  yInfo() << "----- iDyn H Transform -----\n" << DynH.getRotation().toString() 
+  yInfo() << "----- iKin H Transform -----\n" << KinH.toString(5, 3);
+  yInfo() << "----- iDyn H Transform -----\n"
+          << DynH.getRotation().toString()
           << "pos: " << DynH.getPosition().toString();
   yInfo() << "-------------------------";
 }
@@ -156,15 +158,25 @@ bool KinThread::loadIDynModelFromUrdf(const std::string& filename,
 KinModule::KinModule() : RFModule() {}
 KinModule::~KinModule() {}
 
-bool KinModule::configure(yarp::os::ResourceFinder& rf) {  
-  if(!rf.check("model")){
+bool KinModule::configure(yarp::os::ResourceFinder& rf) {
+  if (!rf.check("model")) {
     yError() << "URDF robot model not provided.";
     return false;
   }
 
-  std::string modelPath = rf.find("model").asString();
+  if (!rf.check("joints")) {
+    yError() << "Joint positions not provided, using iCubSIM defaults.";
+  }
 
-  thr = std::make_unique<KinThread>(0.01, modelPath);
+  auto modelPath = rf.find("model").asString();
+  const auto * joints = rf.find("joints").asList();
+  std::vector<double> jointsValues; 
+  
+  for(size_t i=0; i< joints->size(); ++i)
+    jointsValues.push_back(joints->get(i).asDouble());
+
+
+  thr = std::make_unique<KinThread>(0.01, modelPath, jointsValues);
 
   return thr->start();
 }

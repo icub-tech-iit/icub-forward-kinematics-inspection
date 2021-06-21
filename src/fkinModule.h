@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <iostream>
+#include <vector>
 
 /**
  * @brief 
@@ -33,7 +34,7 @@ class KinThread : public yarp::os::PeriodicThread {
   * 
   * @param period The thread spinning period.
   */
-  KinThread(double period, const std::string& modelPath);
+  KinThread(double period, const std::string& modelPath, const std::vector<double>& joints);
 
   /**
    * @brief Default destructor of the KinThread object.
