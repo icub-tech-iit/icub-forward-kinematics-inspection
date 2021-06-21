@@ -13,7 +13,7 @@
 int main(int argc, char *argv[]) {
   yarp::os::Network yarp;
   if (!yarp.checkNetwork()) {
-    yError() << "YARP doesn't seem to be available";
+    yError() << "YARP does not seem to be available";
     return EXIT_FAILURE;
   }
   

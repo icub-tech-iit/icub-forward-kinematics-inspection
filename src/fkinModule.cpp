@@ -39,6 +39,8 @@ bool KinThread::threadInit() {
   yarp::os::Property optArm;
   yarp::os::Property optTorso;
 
+  yInfo() << "Port configuration in progress...";
+
   optArm.put("device", "remote_controlboard");
   optArm.put("remote", "/icubSim/left_arm");
   optArm.put("local", "/logger/left_arm");
@@ -154,18 +156,15 @@ bool KinThread::loadIDynModelFromUrdf(const std::string& filename,
 KinModule::KinModule() : RFModule() {}
 KinModule::~KinModule() {}
 
-bool KinModule::configure(yarp::os::ResourceFinder& rf) {
-  yInfo() << "Port configuration in progress...";
-  
-
+bool KinModule::configure(yarp::os::ResourceFinder& rf) {  
   if(!rf.check("model")){
     yError() << "URDF robot model not provided.";
     return false;
   }
 
-  yarp::os::Value modelPath = rf.find("model");
+  std::string modelPath = rf.find("model").asString();
 
-  thr = std::make_unique<KinThread>(0.01, modelPath.asString());
+  thr = std::make_unique<KinThread>(0.01, modelPath);
 
   return thr->start();
 }

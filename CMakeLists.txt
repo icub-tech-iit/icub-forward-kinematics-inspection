@@ -36,4 +36,8 @@ target_sources(${PROJECT_NAME} PRIVATE src/main.cpp
 
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 
+file(GLOB urdf ${CMAKE_CURRENT_SOURCE_DIR}/model/model.urdf)
+
+yarp_install(FILES ${urdf} DESTINATION ${ICUBCONTRIB_ROBOTS_INSTALL_DIR}/icubGazeboSim)
+
 icubcontrib_add_uninstall_target()

@@ -18,4 +18,6 @@ make && make install
 ```
 
 ### 🔘 Run the project
-If you ran `make install`, launch the project with `fkin` in a terminal.
+Running the project requires loading the URDF model of iCub 2.5, provided in the repository.
+
+To launch, run in a terminal `fkin --model icubGazeboSim/model.urdf`.
