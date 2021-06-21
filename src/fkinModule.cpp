@@ -18,7 +18,9 @@
 /**
  * Definitions of KinThread functions
  */
-KinThread::KinThread(double period, const std::string& modelPath, const std::vector<double>& joints) : yarp::os::PeriodicThread(period),
+KinThread::KinThread(double period, const std::string& modelPath,
+                     const std::vector<double>& joints)
+    : yarp::os::PeriodicThread(period),
       arm("left_2.5"),
       armEncValues(),
       torsoEncValues(),
@@ -78,6 +80,8 @@ bool KinThread::threadInit() {
   iArmEnc->getAxes(&nAxes);
   armEncValues.resize(nAxes);
 
+  arm.toLinksProperties(armProperties);
+
   std::vector<std::string> axesList;
   axesList.push_back("torso_pitch");
   axesList.push_back("torso_yaw");
@@ -132,6 +136,11 @@ void KinThread::run() {
   auto KinH = arm.getH(ang);
 
   yInfo() << "----- iKin H Transform -----\n" << KinH.toString(5, 3);
+
+  yInfo() << "H0: " << armProperties.find("H0").toString();
+
+  yInfo() <<  "HN: " << armProperties.find("HN").toString();
+
   yInfo() << "----- iDyn H Transform -----\n"
           << DynH.getRotation().toString()
           << "pos: " << DynH.getPosition().toString();
@@ -164,19 +173,20 @@ bool KinModule::configure(yarp::os::ResourceFinder& rf) {
     return false;
   }
 
-  if (!rf.check("joints")) {
-    yError() << "Joint positions not provided, using iCubSIM defaults.";
+  auto modelPath = rf.find("model").asString();
+
+  std::vector<double> jointsValues;
+
+  if (rf.check("joints")) {
+    const auto* joints = rf.find("joints").asList();
+    for (size_t i = 0; i < joints->size(); ++i) {
+      jointsValues.push_back(joints->get(i).asDouble());
+    }
+  } else {
+    yInfo() << "Joint positions not provided, using iCubSIM defaults.";
   }
 
-  auto modelPath = rf.find("model").asString();
-  const auto * joints = rf.find("joints").asList();
-  std::vector<double> jointsValues; 
-  
-  for(size_t i=0; i< joints->size(); ++i)
-    jointsValues.push_back(joints->get(i).asDouble());
-
-
-  thr = std::make_unique<KinThread>(0.01, modelPath, jointsValues);
+  thr = std::make_unique<KinThread>(0.1, modelPath, jointsValues);
 
   return thr->start();
 }

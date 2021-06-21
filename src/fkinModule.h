@@ -60,6 +60,7 @@ class KinThread : public yarp::os::PeriodicThread {
   yarp::sig::Vector armEncValues;
   yarp::sig::Vector torsoEncValues;
   iCub::iKin::iCubArm arm;
+  yarp::os::Property armProperties;
   iDynTree::KinDynComputations kinDynCompute;
   iDynTree::Model model;
   iDynTree::VectorDynSize dynEncValues;
