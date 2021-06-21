@@ -33,7 +33,7 @@ class KinThread : public yarp::os::PeriodicThread {
   * 
   * @param period The thread spinning period.
   */
-  KinThread(double period);
+  KinThread(double period, const std::string& modelPath);
 
   /**
    * @brief Default destructor of the KinThread object.
@@ -62,6 +62,8 @@ class KinThread : public yarp::os::PeriodicThread {
   iDynTree::KinDynComputations kinDynCompute;
   iDynTree::Model model;
   iDynTree::VectorDynSize dynEncValues;
+
+  std::string modelPath;
 };
 
 

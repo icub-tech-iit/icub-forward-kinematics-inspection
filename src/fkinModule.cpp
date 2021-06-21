@@ -18,13 +18,14 @@
 /**
  * Definitions of KinThread functions
  */
-KinThread::KinThread(double period)
+KinThread::KinThread(double period, const std::string& modelPath)
     : yarp::os::PeriodicThread(period),
-      arm("left"),
+      arm("left_2.5"),
       armEncValues(),
       torsoEncValues(),
       kinDynCompute(),
-      model() {
+      model(),
+      modelPath(modelPath) {
   yInfo() << "KinThread constructor";
   arm.releaseLink(0);
   arm.releaseLink(1);
@@ -91,7 +92,6 @@ bool KinThread::threadInit() {
   axesList.push_back("l_wrist_yaw");
 
   iDynTree::ModelLoader mdlLoader;
-  std::string modelPath = "/home/mfussi/.local/share/iCub/robots/iCubGenova02/model.urdf";
   ok = mdlLoader.loadReducedModelFromFile(modelPath, axesList);
   ok = ok && kinDynCompute.loadRobotModel(mdlLoader.model());
   model = kinDynCompute.model();
@@ -125,10 +125,10 @@ void KinThread::run() {
 
   kinDynCompute.setJointPos(dynEncValues);
 
-  auto DynH = kinDynCompute.getRelativeTransform("torso_1", "l_hand");
+  auto DynH = kinDynCompute.getRelativeTransform("root_link", "l_hand_dh_frame");
   auto KinH = arm.getH(ang);
 
-  yInfo() <<  "----- iKin H Transform -----\n" << KinH.toString(3, 3);
+  yInfo() <<  "----- iKin H Transform -----\n" << KinH.toString(5, 3);
   yInfo() << "----- iDyn H Transform -----\n" << DynH.getRotation().toString() 
           << "pos: " << DynH.getPosition().toString();
   yInfo() << "-------------------------";
@@ -156,8 +156,16 @@ KinModule::~KinModule() {}
 
 bool KinModule::configure(yarp::os::ResourceFinder& rf) {
   yInfo() << "Port configuration in progress...";
+  
 
-  thr = std::make_unique<KinThread>(0.01);
+  if(!rf.check("model")){
+    yError() << "URDF robot model not provided.";
+    return false;
+  }
+
+  yarp::os::Value modelPath = rf.find("model");
+
+  thr = std::make_unique<KinThread>(0.01, modelPath.asString());
 
   return thr->start();
 }

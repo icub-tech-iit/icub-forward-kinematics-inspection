@@ -16,8 +16,10 @@ int main(int argc, char *argv[]) {
     yError() << "YARP doesn't seem to be available";
     return EXIT_FAILURE;
   }
-
+  
   yarp::os::ResourceFinder rf;
+  
+  rf.setDefaultContext("fkin");
   rf.configure(argc, argv);
 
   KinModule mod;
