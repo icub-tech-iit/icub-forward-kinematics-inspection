@@ -1,4 +1,4 @@
-DHsource = readtable('icubarm_source_dhparams.csv');
+DHsource = readtable('resources/icubarm_source_dhparams.csv');
 DHsource.Properties.VariableNames = {'a', 'd', 'alpha', 'offset', 'min', 'max'};
 RobotSource = Revolute('d', DHsource.d(1), 'a', DHsource.a(1), 'alpha', DHsource.alpha(1), 'offset', DHsource.offset(1));
 for i=2:height(DHsource)
@@ -14,7 +14,7 @@ RobotSource.tool = [1	0	0	0;
                     0	0	1	0;
                     0	0	0	1];
 
-DHidyn = readtable('dhparams_2.5.csv');
+DHidyn = readtable('resources/icubgenova02_urdf_dhparams.csv');
 DHidyn.Properties.VariableNames = {'a', 'd', 'alpha', 'offset', 'min', 'max'};
 RobotIDyn = Revolute('d', DHidyn.d(1), 'a', DHidyn.a(1), 'alpha', DHidyn.alpha(1), 'offset', DHidyn.offset(1));
 for i=2:height(DHsource)
