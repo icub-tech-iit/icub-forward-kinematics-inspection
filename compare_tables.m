@@ -21,15 +21,45 @@ for i=2:height(DHidyn)
     RobotIDyn = RobotIDyn + Revolute('d', DHidyn.d(i), 'a', DHidyn.a(i), 'alpha', deg2rad(DHidyn.alpha(i)), 'offset', deg2rad(DHidyn.offset(i)));
 end
 RobotIDyn.name = 'iDynTree';
-RobotIDyn.base = [1	0	0	0;
-                    0	0	-1	0.0269348;
-                    0	1	0	0;
-                    0	0	0	1];
-RobotIDyn.tool = [1	0.0286	0	0;
-                    -0.0286	1	0	0;
-                    0	0	1	0;
-                    0	0	0	1];
-q0 = zeros(length(RobotIDyn.links));
+
+k = 2;
+for i=1:4
+    for j=1:4
+        h(i, j) = homtable{1, k};
+        k = k+1;
+    end
+end
+RobotIDyn.base = h;
+                
+k = 2;
+for i=1:4
+    for j=1:4
+        h(i, j) = homtable{2, k};
+        k = k+1;
+    end
+end
+RobotIDyn.tool = h;
+
+q0 = [0.0 90.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 90.0];
+
+q0 = zeros(1, 10);
+
+iDynTransform = RobotSource.base.double;
+q = q0 + deg2rad(RobotSource.offset);
+for i=1:10
+    ai = RobotSource.a(i);
+    di = RobotSource.d(i);
+    alphai = deg2rad(RobotSource.alpha(i));
+    qi = q(i);
+    Ti = [cos(qi), -sin(qi)*cos(alphai), sin(qi)*sin(alphai), ai*cos(qi);
+         sin(qi), cos(qi)*cos(alphai), -cos(qi)*sin(alphai), ai*sin(qi);
+         0, sin(alphai), cos(alphai), di;
+         0, 0, 0, 1];
+    
+   iDynTransform = iDynTransform * Ti;
+end
+
+iDynTransform = iDynTransform * RobotSource.tool.double;
 
 hold on
 
