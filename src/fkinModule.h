@@ -34,7 +34,7 @@ class KinThread : public yarp::os::PeriodicThread {
   * 
   * @param period The thread spinning period.
   */
-  KinThread(double period, const std::string& modelPath, const std::vector<double>& joints);
+  KinThread(double period, const std::string& modelPath, const yarp::sig::Vector& joints);
 
   /**
    * @brief Default destructor of the KinThread object.
@@ -49,8 +49,6 @@ class KinThread : public yarp::os::PeriodicThread {
   bool threadInit() override;
   void run() override;
   void threadRelease() override;
-  bool loadIDynModelFromUrdf(const std::string& filename, 
-                             iDynTree::Model& model);
 
  protected:
   yarp::dev::IEncoders *iArmEnc;
@@ -60,6 +58,7 @@ class KinThread : public yarp::os::PeriodicThread {
   yarp::sig::Vector armEncValues;
   yarp::sig::Vector torsoEncValues;
   iCub::iKin::iCubArm arm;
+  iCub::iKin::iKinChain *armChain;
   yarp::os::Property armProperties;
   iDynTree::KinDynComputations kinDynCompute;
   iDynTree::Model model;

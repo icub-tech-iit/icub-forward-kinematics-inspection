@@ -19,11 +19,11 @@
  * Definitions of KinThread functions
  */
 KinThread::KinThread(double period, const std::string& modelPath,
-                     const std::vector<double>& joints)
+                     const yarp::sig::Vector& joints)
     : yarp::os::PeriodicThread(period),
       arm("left_2.5"),
-      armEncValues(),
-      torsoEncValues(),
+      armEncValues(joints.subVector(0, 2)),
+      torsoEncValues(joints.subVector(3, 9)),
       kinDynCompute(),
       model(),
       modelPath(modelPath) {
@@ -32,6 +32,10 @@ KinThread::KinThread(double period, const std::string& modelPath,
   arm.releaseLink(1);
   arm.releaseLink(2);
   arm.setAllConstraints(false);
+
+  torsoEncValues *= iCub::ctrl::CTRL_DEG2RAD;
+  armEncValues *= iCub::ctrl::CTRL_DEG2RAD;
+
 }
 
 KinThread::~KinThread() {}
@@ -41,7 +45,7 @@ bool KinThread::threadInit() {
   yarp::os::Property optTorso;
 
   yInfo() << "Port configuration in progress...";
-
+/* 
   optArm.put("device", "remote_controlboard");
   optArm.put("remote", "/icubSim/left_arm");
   optArm.put("local", "/logger/left_arm");
@@ -72,12 +76,14 @@ bool KinThread::threadInit() {
     driverTorso.close();
     return false;
   }
-
+ */
   int nAxes;
-  iTorsoEnc->getAxes(&nAxes);
+  nAxes = 3;
+  //iTorsoEnc->getAxes(&nAxes);
   torsoEncValues.resize(nAxes);
 
-  iArmEnc->getAxes(&nAxes);
+  nAxes = 7;
+  //iArmEnc->getAxes(&nAxes);
   armEncValues.resize(nAxes);
 
   arm.toLinksProperties(armProperties);
@@ -97,6 +103,8 @@ bool KinThread::threadInit() {
   axesList.push_back("l_wrist_yaw");
 
   iDynTree::ModelLoader mdlLoader;
+
+  bool ok = true;
   ok = mdlLoader.loadReducedModelFromFile(modelPath, axesList);
   ok = ok && kinDynCompute.loadRobotModel(mdlLoader.model());
   model = kinDynCompute.model();
@@ -112,13 +120,10 @@ bool KinThread::threadInit() {
 void KinThread::run() {
   yInfo() << "KinThread is running correctly ...";
 
-  iTorsoEnc->getEncoders(torsoEncValues.data());
-  iArmEnc->getEncoders(armEncValues.data());
+ // iTorsoEnc->getEncoders(torsoEncValues.data());
+  //iArmEnc->getEncoders(armEncValues.data());
 
-  torsoEncValues *= iCub::ctrl::CTRL_DEG2RAD;
-  armEncValues *= iCub::ctrl::CTRL_DEG2RAD;
-
-  std::swap(torsoEncValues[0], torsoEncValues[2]);
+  //std::swap(torsoEncValues[0], torsoEncValues[2]);
   auto ang = yarp::math::cat(torsoEncValues, armEncValues);
 
   yInfo() << "iDynTree data:: n_dofs: "
@@ -127,12 +132,13 @@ void KinThread::run() {
           << " n_links: " << kinDynCompute.getNrOfLinks()
           << " n_pos_coords: " << kinDynCompute.model().getNrOfPosCoords();
 
-  dynEncValues = ang.subVector(0, 9);
+  //dynEncValues = ang.subVector(0, 9);
 
-  kinDynCompute.setJointPos(dynEncValues);
+  kinDynCompute.setJointPos(ang.subVector(0, 9));
 
-  auto DynH =
-      kinDynCompute.getRelativeTransform("root_link", "l_hand_dh_frame");
+  armChain = arm.asChain();
+
+  auto DynH = kinDynCompute.getRelativeTransform("root_link", "l_hand_dh_frame");
   auto KinH = arm.getH(ang);
 
   yInfo() << "----- iKin H Transform -----\n" << KinH.toString(5, 3);
@@ -154,13 +160,6 @@ void KinThread::threadRelease() {
   driverTorso.close();
 }
 
-bool KinThread::loadIDynModelFromUrdf(const std::string& filename,
-                                      iDynTree::Model& model) {
-  bool result = true;
-
-  return result;
-}
-
 /**
  * Definitions of KinModule functions
  */
@@ -175,18 +174,20 @@ bool KinModule::configure(yarp::os::ResourceFinder& rf) {
 
   auto modelPath = rf.find("model").asString();
 
-  std::vector<double> jointsValues;
+  yarp::sig::Vector jointsValues;
 
   if (rf.check("joints")) {
     const auto* joints = rf.find("joints").asList();
-    for (size_t i = 0; i < joints->size(); ++i) {
-      jointsValues.push_back(joints->get(i).asDouble());
+
+    if (joints->size() < 10) {
+      yError () << "joints argument requires 10 elements (in degrees), but only " << joints->size() << " were provided.";
     }
-  } else {
-    yInfo() << "Joint positions not provided, using iCubSIM defaults.";
+    for (size_t i = 0; i < joints->size(); ++i) {
+      jointsValues.push_back(iCub::ctrl::CTRL_DEG2RAD * joints->get(i).asDouble());
+    }
   }
 
-  thr = std::make_unique<KinThread>(0.1, modelPath, jointsValues);
+  thr = std::make_unique<KinThread>(1, modelPath, jointsValues);
 
   return thr->start();
 }
