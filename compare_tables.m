@@ -16,9 +16,9 @@ RobotSource.tool = [1	0	0	0;
 
 DHidyn = readtable('resources/icubgenova02_urdf_dhparams.csv');
 DHidyn.Properties.VariableNames = {'a', 'd', 'alpha', 'offset', 'min', 'max'};
-RobotIDyn = Revolute('d', DHidyn.d(1), 'a', DHidyn.a(1), 'alpha', DHidyn.alpha(1), 'offset', DHidyn.offset(1));
-for i=2:height(DHsource)
-    RobotIDyn = RobotIDyn + Revolute('d', DHidyn.d(i), 'a', DHidyn.a(i), 'alpha', DHidyn.alpha(i), 'offset', DHidyn.offset(i));
+RobotIDyn = Revolute('d', DHidyn.d(1), 'a', DHidyn.a(1), 'alpha', deg2rad(DHidyn.alpha(1)), 'offset', deg2rad(DHidyn.offset(1)));
+for i=2:height(DHidyn)
+    RobotIDyn = RobotIDyn + Revolute('d', DHidyn.d(i), 'a', DHidyn.a(i), 'alpha', deg2rad(DHidyn.alpha(i)), 'offset', deg2rad(DHidyn.offset(i)));
 end
 RobotIDyn.name = 'iDynTree';
 RobotIDyn.base = [1	0	0	0;

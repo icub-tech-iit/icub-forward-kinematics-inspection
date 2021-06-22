@@ -186,7 +186,7 @@ bool KinModule::configure(yarp::os::ResourceFinder& rf) {
     yInfo() << "Joint positions not provided, using iCubSIM defaults.";
   }
 
-  thr = std::make_unique<KinThread>(0.1, modelPath, jointsValues);
+  thr = std::make_unique<KinThread>(1., modelPath, jointsValues);
 
   return thr->start();
 }
