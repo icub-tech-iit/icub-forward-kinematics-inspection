@@ -60,57 +60,13 @@ RobotIDyn.tool = h;
 % 
 % sourceTransform = sourceTransform * RobotSource.tool.double;
 
-qhome = [0 0 0 0 0 0 60.5 0 0 0];
-qdes1 = [0 0 0 0 0 0 90 0 0 0];
-qdes2 = [0 0 0 0 90 -30 15 0 0 0];
-qdes3 = [0 0 0 0 135 0 90.5 -90 -30.6 20.4];
+qdes1 = [0 0 0 0 0 0 60.5 0 0 0];
+qdes2 = [0 0 0 0 0 0 90.5 0 0 0];
+qdes3 = [0 0 0 0 90 -30 15 0 0 0];
+qdes4 = [0 0 0 0 135 0 90.5 -90 -30.6 20.4];
 
-Q = deg2rad(qdes1);
+Q = deg2rad(qdes2);
 
-
-subplot(2,2,1)
-hold on
-RobotSource.plot(Q, 'jointcolor', 'b', 'linkcolor', 'r', 'jointdiam', 0.5, ...
-    'nojoints', 'workspace', [-1 1 -1 1 -1 1], ...
-    'noshading', 'noname', 'noshadow', 'top');
-    zlim([-1, 1]);
-alpha(.5)
-hold on
-RobotIDyn.plot(Q, 'jointcolor', 'r', 'linkcolor', 'b', 'jointdiam', 0.5,...
-    'nojoints', 'workspace', [-1 1 -1 1 -1 1], ...
-    'noshading',  'noname', 'noshadow', 'top');
-    zlim([-1, 1]);
-
-
-subplot(2,2,2)
-hold on
-RobotSource.plot(Q, 'jointcolor', 'b', 'linkcolor', 'r', 'jointdiam', 0.5, ...
-    'nojoints', 'workspace', [-1 1 -1 1 -1 1], ...
-    'noshading', 'noname', 'noshadow', 'view', 'x');
-    zlim([-1, 1]);
-
-alpha(.5)
-hold on
-RobotIDyn.plot(Q, 'jointcolor', 'r', 'linkcolor', 'b', 'jointdiam', 0.5,...
-    'nojoints', 'workspace', [-1 1 -1 1 -1 1], ...
-    'noshading',  'noname', 'noshadow', 'view', 'x');
-    zlim([-1, 1]);
-
-subplot(2,2,3)
-hold on
-RobotSource.plot(Q, 'jointcolor', 'b', 'linkcolor', 'r', 'jointdiam', 0.5, ...
-    'nojoints', 'workspace', [-1 1 -1 1 -1 1], ...
-    'noshading', 'noname', 'noshadow', 'view', 'y');
-    zlim([-1, 1]);
-
-alpha(.5)
-hold on
-RobotIDyn.plot(Q, 'jointcolor', 'r', 'linkcolor', 'b', 'jointdiam', 0.5,...
-    'nojoints', 'workspace', [-1 1 -1 1 -1 1], ...
-    'noshading',  'noname', 'noshadow', 'view', 'y');
-    zlim([-1, 1]);
-
-subplot(2,2,4)
 hold on
 RobotSource.plot(Q, 'jointcolor', 'b', 'linkcolor', 'r', 'jointdiam', 0.5, ...
     'nojoints', 'workspace', [-1 1 -1 1 -1 1], ...
@@ -128,7 +84,6 @@ annotation('textbox', [.5 .5 .3 .3], 'String', 'red: iKin   blue: iDynTree','Fit
 exportgraphics(gcf(), 'zeros.png');
 
 
-
 RobotIDyn.display
 RobotIDyn.fkine(Q)
 sprintf('IDyn H0')
@@ -142,7 +97,6 @@ sprintf('IDyn H0')
 RobotSource.base
 sprintf('IDyn EE')
 RobotSource.tool
-
 
 model = importrobot('model/model.urdf');
 fromtorso = subtree(model, 'root_link');
