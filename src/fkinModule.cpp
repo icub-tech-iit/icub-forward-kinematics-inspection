@@ -22,8 +22,8 @@ KinThread::KinThread(double period, const std::string& modelPath,
                      const yarp::sig::Vector& joints)
     : yarp::os::PeriodicThread(period),
       arm("left_2.5"),
-      armEncValues(joints.subVector(0, 2)),
-      torsoEncValues(joints.subVector(3, 9)),
+      armEncValues(joints.subVector(3, 9)),
+      torsoEncValues(joints.subVector(0, 2)),
       kinDynCompute(),
       model(),
       modelPath(modelPath) {
@@ -76,7 +76,7 @@ bool KinThread::threadInit() {
     driverTorso.close();
     return false;
   }
- */
+
   int nAxes;
   nAxes = 3;
   //iTorsoEnc->getAxes(&nAxes);
@@ -85,6 +85,9 @@ bool KinThread::threadInit() {
   nAxes = 7;
   //iArmEnc->getAxes(&nAxes);
   armEncValues.resize(nAxes);
+
+ */
+
 
   arm.toLinksProperties(armProperties);
 
@@ -183,7 +186,7 @@ bool KinModule::configure(yarp::os::ResourceFinder& rf) {
       yError () << "joints argument requires 10 elements (in degrees), but only " << joints->size() << " were provided.";
     }
     for (size_t i = 0; i < joints->size(); ++i) {
-      jointsValues.push_back(iCub::ctrl::CTRL_DEG2RAD * joints->get(i).asDouble());
+      jointsValues.push_back(joints->get(i).asDouble());
     }
   }
 
