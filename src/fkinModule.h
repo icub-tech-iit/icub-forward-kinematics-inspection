@@ -67,7 +67,6 @@ class KinThread : public yarp::os::PeriodicThread {
   std::string modelPath;
 };
 
-
 class KinModule : public yarp::os::RFModule {
  public:
   KinModule();

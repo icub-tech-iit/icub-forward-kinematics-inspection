@@ -21,9 +21,9 @@
 KinThread::KinThread(double period, const std::string& modelPath,
                      const yarp::sig::Vector& joints)
     : yarp::os::PeriodicThread(period),
-      arm("left_2.5"),
       armEncValues(joints.subVector(3, 9)),
       torsoEncValues(joints.subVector(0, 2)),
+      arm("left_v2.5"),
       kinDynCompute(),
       model(),
       modelPath(modelPath) {
@@ -35,8 +35,7 @@ KinThread::KinThread(double period, const std::string& modelPath,
 
   torsoEncValues *= iCub::ctrl::CTRL_DEG2RAD;
   armEncValues *= iCub::ctrl::CTRL_DEG2RAD;
-
-}
+  }
 
 KinThread::~KinThread() {}
 
@@ -126,7 +125,7 @@ void KinThread::run() {
  // iTorsoEnc->getEncoders(torsoEncValues.data());
   //iArmEnc->getEncoders(armEncValues.data());
 
-  //std::swap(torsoEncValues[0], torsoEncValues[2]);
+  std::swap(torsoEncValues[0], torsoEncValues[2]);
   auto ang = yarp::math::cat(torsoEncValues, armEncValues);
 
   yInfo() << "iDynTree data:: n_dofs: "
@@ -138,14 +137,13 @@ void KinThread::run() {
   //dynEncValues = ang.subVector(0, 9);
 
   kinDynCompute.setJointPos(ang.subVector(0, 9));
-
   armChain = arm.asChain();
-
   auto DynH = kinDynCompute.getRelativeTransform("root_link", "l_hand_dh_frame");
   auto KinH = arm.getH(ang);
 
   yInfo() << "----- iKin H Transform -----\n" << KinH.toString(5, 3);
 
+  yInfo() << "properties: " << armProperties.toString();
   yInfo() << "H0: " << armProperties.find("H0").toString();
 
   yInfo() <<  "HN: " << armProperties.find("HN").toString();
