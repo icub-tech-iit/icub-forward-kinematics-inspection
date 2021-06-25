@@ -44,49 +44,6 @@ bool KinThread::threadInit() {
   yarp::os::Property optTorso;
 
   yInfo() << "Port configuration in progress...";
-/* 
-  optArm.put("device", "remote_controlboard");
-  optArm.put("remote", "/icubSim/left_arm");
-  optArm.put("local", "/logger/left_arm");
-
-  optTorso.put("device", "remote_controlboard");
-  optTorso.put("remote", "/icubSim/torso");
-  optTorso.put("local", "/logger/torso");
-
-  if (!driverArm.open(optArm)) {
-    yError() << "Unable to connect to /icubSim/left_arm";
-    return false;
-  }
-
-  if (!driverTorso.open(optTorso)) {
-    yError() << "Unable to connect to /icubSim/torso";
-    driverArm.close();
-    return false;
-  }
-
-  // open views
-  bool ok = true;
-  ok = ok && driverTorso.view<yarp::dev::IEncoders>(iTorsoEnc);
-  ok = ok && driverArm.view<yarp::dev::IEncoders>(iArmEnc);
-
-  if (!ok) {
-    yError() << "Unable to open views";
-    driverArm.close();
-    driverTorso.close();
-    return false;
-  }
-
-  int nAxes;
-  nAxes = 3;
-  //iTorsoEnc->getAxes(&nAxes);
-  torsoEncValues.resize(nAxes);
-
-  nAxes = 7;
-  //iArmEnc->getAxes(&nAxes);
-  armEncValues.resize(nAxes);
-
- */
-
 
   arm.toLinksProperties(armProperties);
 
@@ -122,19 +79,14 @@ bool KinThread::threadInit() {
 void KinThread::run() {
   yInfo() << "KinThread is running correctly ...";
 
- // iTorsoEnc->getEncoders(torsoEncValues.data());
-  //iArmEnc->getEncoders(armEncValues.data());
-
   std::swap(torsoEncValues[0], torsoEncValues[2]);
   auto ang = yarp::math::cat(torsoEncValues, armEncValues);
 
-  yInfo() << "iDynTree data:: n_dofs: "
+  yInfo() << "iDynTree data: n_dofs: "
           << kinDynCompute.getNrOfDegreesOfFreedom()
           << " n_frames: " << kinDynCompute.getNrOfFrames()
           << " n_links: " << kinDynCompute.getNrOfLinks()
           << " n_pos_coords: " << kinDynCompute.model().getNrOfPosCoords();
-
-  //dynEncValues = ang.subVector(0, 9);
 
   kinDynCompute.setJointPos(ang.subVector(0, 9));
   armChain = arm.asChain();

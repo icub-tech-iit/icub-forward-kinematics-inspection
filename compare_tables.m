@@ -138,6 +138,7 @@ error_orient = zeros(torsojointsnum, 3, ntrials);
 for k=1:ntrials
 [iKinHee, iKinTransforms] = RobotSource.fkine(Q(k, :));
 [iDynTreeHee, iDynTreeTransforms] = RobotIDyn.fkine(Q(k, :));
+    
     for i=1:torsojointsnum
         Hd = iDynTreeTransforms(i).double;
         Rd = Hd(1:3, 1:3);
