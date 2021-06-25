@@ -16,7 +16,7 @@ DHidyn = readtable('resources/icubgenova02_urdf_dhparams.csv');
 DHidyn.Properties.VariableNames = {'a', 'd', 'alpha', 'offset', 'min', 'max'};
 RobotIDyn = Revolute('d', DHidyn.d(1), 'a', DHidyn.a(1), 'alpha', deg2rad(DHidyn.alpha(1)), 'offset', deg2rad(DHidyn.offset(1)));
 for i=2:height(DHsource)
-    RobotIDyn = RobotIDyn + Revolute('d', DHidyn.d(i), 'a', DHidyn.a(i), 'alpha', deg2rad(DHidyn.alpha(i)), 'offset', deg2rad(DHidyn.offset(i)));
+   RobotIDyn = RobotIDyn + Revolute('d', DHidyn.d(i), 'a', DHidyn.a(i), 'alpha', deg2rad(DHidyn.alpha(i)), 'offset', deg2rad(DHidyn.offset(i)));
 end
 RobotIDyn.name = 'iDynTree';
 
@@ -46,8 +46,8 @@ qdes3 = [0 0 0 0 135 0 90.5 0 0 0];
 qdes4 = [0 0 0 0 135 0 90.5 -90 -30.6 20.4];
 qdes5 = [25 0 -9.6, 9.45 160.80 79.56 19.005 0 0 0.6];
 qdes6 = [25 10 -9.6, 9.45 160.80 79.56 19.005 0 0 0.6];
-qdes7 = [25 -15 -9.6, 9.45 160.80 79.56 19.005 0 0 0.6];
-qdes8 = [-25 30 -9.6, 9.45 160.80 79.56 19.005 0 0 0.6];
+qdes7 = [25 -15 -9.6, 9.45 160.80 79.56 19.005 0 0 5];
+qdes8 = [-25 30 -9.6, 9.45 160.80 79.56 19.005 0 10 5];
 
 Q = deg2rad(qdes2);
 RobotIDyn.display
@@ -122,6 +122,76 @@ for i=1:ntrials
 end
 ylabel('error Z [mm]');
 xlabel('reference frame index');
+
+%% Verify orientation error for torso joints
+ntrials = 4;
+Q = zeros(ntrials, 10);
+Q(1, :) = deg2rad(qdes5);
+Q(2, :) = deg2rad(qdes6);
+Q(3, :) = deg2rad(qdes7);
+Q(4, :) = deg2rad(qdes8);
+
+torsojointsnum = 10;
+
+error_orient = zeros(torsojointsnum, 3, ntrials);
+
+for k=1:ntrials
+[iKinHee, iKinTransforms] = RobotSource.fkine(Q(k, :));
+[iDynTreeHee, iDynTreeTransforms] = RobotIDyn.fkine(Q(k, :));
+    for i=1:torsojointsnum
+        Hd = iDynTreeTransforms(i).double;
+        Rd = Hd(1:3, 1:3);
+        He = iKinTransforms(i).double;
+        Re = He(1:3, 1:3);
+        R = Rd * Re';
+        axang = rotm2axang(R);
+        r = axang(1:3);
+        theta = axang(4);
+        error_orient(i, :, k) = r * sin(theta);        
+    end
+end
+
+figure('renderer', 'painters')
+grid minor
+hold on
+for i=1:ntrials
+    error_norm = vecnorm(error_orient(:, :, i), 2, 2);
+    plot(error_norm, 'o-', 'LineWidth', 1.2);
+end
+legend({'test5', 'test6', 'test7', 'test8'});
+title('Norm of orientation error between iDynTree and iKin with four poses - aixs angle computation')
+xlabel('reference frame index')
+ylabel('norm')
+
+figure('renderer', 'painters')
+subplot(3,1,1)
+hold on
+grid minor
+for i=1:ntrials
+    plot(error_orient(:, 1, i), 'o-', 'LineWidth', 1.2);
+end
+legend({'test5', 'test6', 'test7', 'test8'});
+title('Orientation error between iDynTree and iKin with four poses');
+ylabel('n ');
+
+subplot(3,1,2)
+hold on
+grid minor
+for i=1:ntrials
+    plot(error_orient(:, 2, i), 'o-', 'LineWidth', 1.2);
+end
+ylabel('s');
+
+subplot(3,1,3)
+hold on
+grid minor
+for i=1:ntrials
+    plot(error_orient(:, 3, i), 'o-', 'LineWidth', 1.2);
+end
+ylabel('a');
+xlabel('reference frame index');
+
+
 %% Test  500 random configurations
 
 njoints = 10;
