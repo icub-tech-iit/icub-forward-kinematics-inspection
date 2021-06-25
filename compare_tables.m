@@ -191,35 +191,3 @@ for i=1:ntrials
 end
 ylabel('a');
 xlabel('reference frame index');
-
-
-%% Test  500 random configurations
-
-njoints = 10;
-ntrials = 500;
-std = 60;
-qrand = fix(std.*rand(ntrials, njoints));
-
-IdynTransl = zeros(ntrials, 3);
-SourceTransl = zeros(ntrials, 3);
-for i=1:ntrials
-    H = RobotIDyn.fkine(qrand(i, :)).double;
-    IdynTransl(i, :) = H(1:3, 4);
-    H = RobotSource.fkine(qrand(i, :)).double;
-    SourceTransl(i, :) = H(1:3, 4) ;
-end
-
-e_trials = IdynTransl - SourceTransl;
-subplot(3,1,1)
-histogram(e_trials(:,1) * 1000, 50)
-subplot(3,1,2)
-histogram(e_trials(:,2) * 1000, 50)
-subplot(3,1,3)
-histogram(e_trials(:,3) * 1000, 50)
-grid minor
-legend({'e_x','e_y','e_z'})
-ylabel('n. occurrences')
-xlabel('Error [mm]')
-%% Test handpicked configs
-
-anglesdeg = repmat([-90, -60, -30, -15, 0, 15, 30, 60, 90]', 1, njoints);

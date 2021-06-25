@@ -25,13 +25,9 @@ KinThread::KinThread(double period, const std::string& modelPath,
       torsoEncValues(joints.subVector(0, 2)),
       arm("left_v2.5"),
       kinDynCompute(),
-      model(),
       modelPath(modelPath) {
   yInfo() << "KinThread constructor";
-  arm.releaseLink(0);
-  arm.releaseLink(1);
-  arm.releaseLink(2);
-  arm.setAllConstraints(false);
+
 
   torsoEncValues *= iCub::ctrl::CTRL_DEG2RAD;
   armEncValues *= iCub::ctrl::CTRL_DEG2RAD;
@@ -47,64 +43,13 @@ bool KinThread::threadInit() {
 
   arm.toLinksProperties(armProperties);
 
-  std::vector<std::string> axesList;
-  axesList.push_back("torso_pitch");
-  axesList.push_back("torso_yaw");
-  axesList.push_back("torso_roll");
-
-  // Left arm
-  axesList.push_back("l_shoulder_pitch");
-  axesList.push_back("l_shoulder_roll");
-  axesList.push_back("l_shoulder_yaw");
-  axesList.push_back("l_elbow");
-  axesList.push_back("l_wrist_prosup");
-  axesList.push_back("l_wrist_pitch");
-  axesList.push_back("l_wrist_yaw");
-
-  iDynTree::ModelLoader mdlLoader;
-
-  bool ok = true;
-  ok = mdlLoader.loadReducedModelFromFile(modelPath, axesList);
-  ok = ok && kinDynCompute.loadRobotModel(mdlLoader.model());
-  model = kinDynCompute.model();
-
-  if (!ok) {
-    yError() << "Unable to open model " << modelPath;
-    return ok;
-  }
-
   return true;
 }
 
 void KinThread::run() {
   yInfo() << "KinThread is running correctly ...";
 
-  std::swap(torsoEncValues[0], torsoEncValues[2]);
-  auto ang = yarp::math::cat(torsoEncValues, armEncValues);
-
-  yInfo() << "iDynTree data: n_dofs: "
-          << kinDynCompute.getNrOfDegreesOfFreedom()
-          << " n_frames: " << kinDynCompute.getNrOfFrames()
-          << " n_links: " << kinDynCompute.getNrOfLinks()
-          << " n_pos_coords: " << kinDynCompute.model().getNrOfPosCoords();
-
-  kinDynCompute.setJointPos(ang.subVector(0, 9));
-  armChain = arm.asChain();
-  auto DynH = kinDynCompute.getRelativeTransform("root_link", "l_hand_dh_frame");
-  auto KinH = arm.getH(ang);
-
-  yInfo() << "----- iKin H Transform -----\n" << KinH.toString(5, 3);
-
-  yInfo() << "properties: " << armProperties.toString();
-  yInfo() << "H0: " << armProperties.find("H0").toString();
-
-  yInfo() <<  "HN: " << armProperties.find("HN").toString();
-
-  yInfo() << "----- iDyn H Transform -----\n"
-          << DynH.getRotation().toString()
-          << "pos: " << DynH.getPosition().toString();
-  yInfo() << "-------------------------";
-}
+ 
 
 void KinThread::threadRelease() {
   yInfo() << "KinThread is shutting down...";
@@ -140,9 +85,51 @@ bool KinModule::configure(yarp::os::ResourceFinder& rf) {
     }
   }
 
-  thr = std::make_unique<KinThread>(1, modelPath, jointsValues);
+  arm.releaseLink(0);
+  arm.releaseLink(1);
+  arm.releaseLink(2);
+  arm.setAllConstraints(false);
 
-  return thr->start();
+  std::vector<std::string> axesList;
+  axesList.push_back("torso_pitch");
+  axesList.push_back("torso_yaw");
+  axesList.push_back("torso_roll");
+
+  // Left arm
+  axesList.push_back("l_shoulder_pitch");
+  axesList.push_back("l_shoulder_roll");
+  axesList.push_back("l_shoulder_yaw");
+  axesList.push_back("l_elbow");
+  axesList.push_back("l_wrist_prosup");
+  axesList.push_back("l_wrist_pitch");
+  axesList.push_back("l_wrist_yaw");
+
+  loadIDynTreeKinematicsFromUrdf(const std::string& modelPath, std::vector<std::string>& axesList);
+
+
+  joints = joints * iCub::ctrl::CTRL_DEG2RAD;
+
+  std::swap(torsoEncValues[0], torsoEncValues[2]);
+  auto ang = yarp::math::cat(torsoEncValues, armEncValues);
+  //thr = std::make_unique<KinThread>(1, modelPath, jointsValues);
+
+  //return thr->start();
+}
+
+bool KinModule::loadIDynTreeKinematicsFromUrdf(const std::string& modelPath, std::vector<std::string>& axesList) {
+  bool ok = true;
+  iDynTree::ModelLoader mdlLoader;
+  
+  ok = mdlLoader.loadReducedModelFromFile(modelPath, axesList);
+  ok = ok && kinDynCompute.loadRobotModel(mdlLoader.model());
+
+  if (!ok) {
+    yError() << "Unable to open model " << modelPath;
+  } else {
+    yInfo() << "URDF model loaded successfully.";
+  }
+
+  return ok;
 }
 
 bool KinModule::close() {
@@ -156,6 +143,31 @@ double KinModule::getPeriod() { return 1.; }
 
 bool KinModule::updateModule() {
   yInfo() << "KinModule is running correctly...";
+
+  yInfo() << "iDynTree data: n_dofs: "
+          << kinDynCompute.getNrOfDegreesOfFreedom()
+          << " n_frames: " << kinDynCompute.getNrOfFrames()
+          << " n_links: " << kinDynCompute.getNrOfLinks()
+          << " n_pos_coords: " << kinDynCompute.model().getNrOfPosCoords();
+
+  kinDynCompute.setJointPos(ang.subVector(0, 9));
+  armChain = arm.asChain();
+  auto DynH = kinDynCompute.getRelativeTransform("root_link", "l_hand_dh_frame");
+  auto KinH = arm.getH(ang);
+
+  yInfo() << "----- iKin H Transform -----\n" << KinH.toString(5, 3);
+
+  yInfo() << "properties: " << armProperties.toString();
+  yInfo() << "H0: " << armProperties.find("H0").toString();
+
+  yInfo() <<  "HN: " << armProperties.find("HN").toString();
+
+  yInfo() << "----- iDyn H Transform -----\n"
+          << DynH.getRotation().toString()
+          << "pos: " << DynH.getPosition().toString();
+  yInfo() << "-------------------------";
+}
+
 
   return true;
 }

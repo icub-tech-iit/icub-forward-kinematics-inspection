@@ -49,22 +49,6 @@ class KinThread : public yarp::os::PeriodicThread {
   bool threadInit() override;
   void run() override;
   void threadRelease() override;
-
- protected:
-  yarp::dev::IEncoders *iArmEnc;
-  yarp::dev::IEncoders *iTorsoEnc;
-  yarp::dev::PolyDriver driverArm;
-  yarp::dev::PolyDriver driverTorso;
-  yarp::sig::Vector armEncValues;
-  yarp::sig::Vector torsoEncValues;
-  iCub::iKin::iCubArm arm;
-  iCub::iKin::iKinChain *armChain;
-  yarp::os::Property armProperties;
-  iDynTree::KinDynComputations kinDynCompute;
-  iDynTree::Model model;
-  iDynTree::VectorDynSize dynEncValues;
-
-  std::string modelPath;
 };
 
 class KinModule : public yarp::os::RFModule {
@@ -73,10 +57,17 @@ class KinModule : public yarp::os::RFModule {
   ~KinModule();
 
   bool configure(yarp::os::ResourceFinder &rf) override;
+  bool loadIDynTreeKinematicsFromUrdf(const std::string& modelPath, std::vector<std::string>& axesList)
   bool close() override;
   double getPeriod() override;
   bool updateModule() override;
 
  private:
-  std::unique_ptr<KinThread> thr;
+  yarp::sig::Vector armEncValues;
+  yarp::sig::Vector torsoEncValues;
+  iCub::iKin::iCubArm arm;
+  iCub::iKin::iKinChain *armChain;
+  yarp::os::Property armProperties;
+  iDynTree::KinDynComputations kinDynCompute;
+  iDynTree::VectorDynSize dynEncValues;
 };
