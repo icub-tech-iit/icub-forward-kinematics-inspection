@@ -75,13 +75,14 @@ bool KinModule::configure(yarp::os::ResourceFinder& rf) {
   yarp::sig::Vector jointsValues;
 
   if (rf.check("joints")) {
-    const auto* joints = rf.find("joints").asList();
+    const auto* jointsList = rf.find("joints").asList();
 
-    if (joints->size() < 10) {
-      yError () << "joints argument requires 10 elements (in degrees), but only " << joints->size() << " were provided.";
+    if (jointsList->size() < 10) {
+      yError () << "joints argument requires 10 elements (in degrees),but"
+      "only" << joints->size() << " were provided.";
     }
-    for (size_t i = 0; i < joints->size(); ++i) {
-      jointsValues.push_back(joints->get(i).asDouble());
+    for (size_t i = 0; i < jointsList->size(); ++i) {
+      jointsValues.push_back(jointsList->get(i).asDouble());
     }
   }
 
@@ -104,10 +105,10 @@ bool KinModule::configure(yarp::os::ResourceFinder& rf) {
   axesList.push_back("l_wrist_pitch");
   axesList.push_back("l_wrist_yaw");
 
-  loadIDynTreeKinematicsFromUrdf(const std::string& modelPath, std::vector<std::string>& axesList);
+  loadIDynTreeKinematicsFromUrdf(modelPath, axesList);
 
 
-  joints = joints * iCub::ctrl::CTRL_DEG2RAD;
+  jointsList = jointsList * iCub::ctrl::CTRL_DEG2RAD;
 
   std::swap(torsoEncValues[0], torsoEncValues[2]);
   auto ang = yarp::math::cat(torsoEncValues, armEncValues);
@@ -116,7 +117,8 @@ bool KinModule::configure(yarp::os::ResourceFinder& rf) {
   //return thr->start();
 }
 
-bool KinModule::loadIDynTreeKinematicsFromUrdf(const std::string& modelPath, std::vector<std::string>& axesList) {
+bool KinModule::loadIDynTreeKinematicsFromUrdf(const std::string& modelPath, 
+const std::vector<std::string>& axesList) {
   bool ok = true;
   iDynTree::ModelLoader mdlLoader;
   
@@ -152,7 +154,8 @@ bool KinModule::updateModule() {
 
   kinDynCompute.setJointPos(ang.subVector(0, 9));
   armChain = arm.asChain();
-  auto DynH = kinDynCompute.getRelativeTransform("root_link", "l_hand_dh_frame");
+  auto DynH = kinDynCompute.getRelativeTransform("root_link", 
+"l_hand_dh_frame");
   auto KinH = arm.getH(ang);
 
   yInfo() << "----- iKin H Transform -----\n" << KinH.toString(5, 3);
