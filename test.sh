@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # home position by icubsim - loose L shape
 if [[ $1 -eq 1 ]]; then 
