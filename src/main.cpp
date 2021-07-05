@@ -5,9 +5,11 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <cstdlib>
-#include <yarp/os/Network.h>
 #include <yarp/os/LogStream.h>
+#include <yarp/os/Network.h>
+
+#include <cstdlib>
+
 #include "fkinModule.h"
 
 int main(int argc, char *argv[]) {
@@ -16,12 +18,15 @@ int main(int argc, char *argv[]) {
     yError() << "YARP does not seem to be available";
     return EXIT_FAILURE;
   }
-  
+
   yarp::os::ResourceFinder rf;
-  
+
   rf.setDefaultContext("fkin");
   rf.configure(argc, argv);
 
-  KinModule mod;
-  return mod.runModule(rf);
+  KinModule mod("left_v2.5");
+
+  mod.configure(rf);
+
+  return mod.evaluateKinematics("root_link", "l_hand_dh_frame");
 }
