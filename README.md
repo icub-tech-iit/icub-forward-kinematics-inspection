@@ -22,4 +22,4 @@ Running the project requires loading the URDF model of iCub 2.5, provided in the
 
 To run the project, you can use the script `test.sh`, which provides 4 joint configurations. 
 
-To use it, run on a terminal `./test.sh <model_path> <joint_cfg>`, where `model_path` is the path of the urdf file relative to the current folder, and `joint_cfg` can be either 1, 2, 3, 4.
+To use it, run on a terminal `./test.sh <model_path> <joint_cfg>`, where `model_path` is the path of the urdf file relative to the current folder, and `joint_cfg` can be either 1, 2, 3, 4. For example `./test.sh model/model_v2.5.urdf 3`.
