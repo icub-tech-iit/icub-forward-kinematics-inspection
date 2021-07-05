@@ -10,11 +10,8 @@
 #include <iDynTree/Model/Link.h>
 #include <iDynTree/Model/Model.h>
 #include <iDynTree/ModelIO/ModelLoader.h>
-#include <yarp/dev/PolyDriver.h>
 #include <yarp/os/LogStream.h>
-#include <yarp/os/Network.h>
-#include <yarp/os/PeriodicThread.h>
-#include <yarp/os/RFModule.h>
+#include <yarp/os/ResourceFinder.h>
 #include <yarp/sig/Vector.h>
 
 #include <iostream>
@@ -31,7 +28,7 @@ class KinModule {
   bool configure(const yarp::os::ResourceFinder& rf);
   bool loadIDynTreeKinematicsFromUrdf(const std::string& modelPath,
                                       const std::vector<std::string>& axesList);
-  bool evaluateKinematics(const std::string& rootFrame, const std::string& endFrame);
+  void evaluateKinematics(const std::string& rootFrame, const std::string& endFrame);
 
  private:
   iCub::iKin::iCubArm arm;

@@ -2,7 +2,7 @@
 
 # home position by icubsim - loose L shape
 if [[ $1 -eq 1 ]]; then 
-fkin --model model/model_v3.urdf --joints "(0.0 0.0 0.0 0.0 0.0 0.0 60.5 0.0 0.0 0.0)"
+fkin --model model/model_v2.5.urdf --joints "(0.0 0.0 0.0 0.0 0.0 0.0 60.5 0.0 0.0 0.0)"
 fi
 
 # Arm in L shape - 90deg elbow

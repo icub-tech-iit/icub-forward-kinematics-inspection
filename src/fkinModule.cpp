@@ -24,6 +24,7 @@ KinModule::KinModule(const std::string& armType)
 KinModule::~KinModule() {}
 
 bool KinModule::configure(const yarp::os::ResourceFinder& rf) {
+
   if (!rf.check("model")) {
     yError() << "URDF robot model not provided.";
     return false;
@@ -94,7 +95,7 @@ bool KinModule::loadIDynTreeKinematicsFromUrdf(
   return ok;
 }
 
-bool KinModule::evaluateKinematics(const std::string& rootFrame, const std::string& endFrame) {
+void KinModule::evaluateKinematics(const std::string& rootFrame, const std::string& endFrame) {
   yInfo() << "evaluateKinematics is running correctly...";
 
   yInfo() << "iDynTree data: n_dofs: "
@@ -120,6 +121,4 @@ bool KinModule::evaluateKinematics(const std::string& rootFrame, const std::stri
           << DynH.getRotation().toString()
           << "pos: " << DynH.getPosition().toString();
   yInfo() << "-------------------------";
-
-  return true;
 }

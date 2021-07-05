@@ -5,20 +5,9 @@
  *                                                                            *
  ******************************************************************************/
 
-#include <yarp/os/LogStream.h>
-#include <yarp/os/Network.h>
-
-#include <cstdlib>
-
 #include "fkinModule.h"
 
 int main(int argc, char *argv[]) {
-  yarp::os::Network yarp;
-  if (!yarp.checkNetwork()) {
-    yError() << "YARP does not seem to be available";
-    return EXIT_FAILURE;
-  }
-
   yarp::os::ResourceFinder rf;
 
   rf.setDefaultContext("fkin");
@@ -28,5 +17,6 @@ int main(int argc, char *argv[]) {
 
   mod.configure(rf);
 
-  return mod.evaluateKinematics("root_link", "l_hand_dh_frame");
+  mod.evaluateKinematics("root_link", "l_hand_dh_frame");
+  return 0;
 }
