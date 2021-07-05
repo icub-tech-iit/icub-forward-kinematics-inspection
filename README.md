@@ -18,7 +18,7 @@ make && make install
 ```
 
 ### 🔘 Run the project
-Running the project requires loading the URDF model of iCub 2.5, provided in the repository.
+Running the project requires loading the URDF model of iCub 2.0, 2.5, or 2.7, all provided in the repository.
 
 To run the project, you can use the script `test.sh`, which provides 4 joint configurations. 
 
