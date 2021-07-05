@@ -19,14 +19,17 @@
  * Definitions of KinModule functions
  */
 KinModule::KinModule(const std::string& armType)
-    : arm(armType), kinDynCompute() {}
+    : arm(armType),
+      armChain(),
+      armProperties(),
+      kinDynCompute(),
+      jointsValues() {}
 
 KinModule::~KinModule() {}
 
 bool KinModule::configure(const yarp::os::ResourceFinder& rf) {
-
   if (!rf.check("model")) {
-    yError() << "URDF robot model not provided.";
+    std::cout << "URDF robot model not provided." << std::endl;
     return false;
   }
   auto modelPath = rf.find("model").asString();
@@ -53,7 +56,7 @@ bool KinModule::configure(const yarp::os::ResourceFinder& rf) {
   }
 
   if (!rf.check("joints")) {
-    yError() << "Joints values not provided.";
+    std::cout << "Joints values not provided." << std::endl;
     return false;
   } else {
     const auto* jointsList = rf.find("joints").asList();
@@ -81,44 +84,46 @@ bool KinModule::configure(const yarp::os::ResourceFinder& rf) {
 bool KinModule::loadIDynTreeKinematicsFromUrdf(
     const std::string& modelPath, const std::vector<std::string>& axesList) {
   bool ok = true;
-  iDynTree::ModelLoader mdlLoader;
-
   ok = mdlLoader.loadReducedModelFromFile(modelPath, axesList);
   ok = ok && kinDynCompute.loadRobotModel(mdlLoader.model());
 
   if (!ok) {
-    yError() << "Unable to open model " << modelPath;
+    std::cout << "Unable to open model " << modelPath << std::endl;
   } else {
-    yInfo() << "URDF model loaded successfully.";
+    std::cout << "URDF model loaded successfully." << std::endl;
   }
 
   return ok;
 }
 
-void KinModule::evaluateKinematics(const std::string& rootFrame, const std::string& endFrame) {
-  yInfo() << "evaluateKinematics is running correctly...";
-
-  yInfo() << "iDynTree data: n_dofs: "
-          << kinDynCompute.getNrOfDegreesOfFreedom()
-          << " n_frames: " << kinDynCompute.getNrOfFrames()
-          << " n_links: " << kinDynCompute.getNrOfLinks()
-          << " n_pos_coords: " << kinDynCompute.model().getNrOfPosCoords();
-
+void KinModule::evaluateKinematics(const std::string& rootFrame,
+                                   const std::string& endFrame) {
   kinDynCompute.setJointPos(jointsValues);
   armChain = arm.asChain();
 
   auto DynH = kinDynCompute.getRelativeTransform(rootFrame, endFrame);
   auto KinH = arm.getH(jointsValues);
 
-  yInfo() << "----- iKin H Transform -----\n" << KinH.toString(5, 3);
+  std::cout << "-------------------------" << std::endl
+            << "------- iKin Data -------" << std::endl
+            << "-------------------------" << std::endl;
 
-  yInfo() << "properties: " << armProperties.toString();
-  yInfo() << "H0: " << armProperties.find("H0").toString();
+  std::cout << "Transform: " << std::endl << KinH.toString(5, 3) << std::endl;
 
-  yInfo() << "HN: " << armProperties.find("HN").toString();
+  std::cout << "Properties: " << std::endl
+            << armProperties.toString() << std::endl;
 
-  yInfo() << "----- iDyn H Transform -----\n"
-          << DynH.getRotation().toString()
-          << "pos: " << DynH.getPosition().toString();
-  yInfo() << "-------------------------";
+  std::cout << "H0: " << std::endl
+            << armProperties.find("H0").toString() << std::endl;
+
+  std::cout << "HN: " << std::endl
+            << armProperties.find("HN").toString() << std::endl;
+
+  std::cout << "-------------------------" << std::endl
+            << "----- iDynTree Data -----" << std::endl
+            << "-------------------------" << std::endl;
+
+  std::cout << "Transform:" << std::endl
+            << DynH.getRotation().toString()
+            << "pos: " << DynH.getPosition().toString() << std::endl;
 }

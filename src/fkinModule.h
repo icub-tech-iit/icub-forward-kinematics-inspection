@@ -8,7 +8,6 @@
 #include <iCub/iKin/iKinFwd.h>
 #include <iDynTree/KinDynComputations.h>
 #include <iDynTree/Model/Link.h>
-#include <iDynTree/Model/Model.h>
 #include <iDynTree/ModelIO/ModelLoader.h>
 #include <yarp/os/LogStream.h>
 #include <yarp/os/ResourceFinder.h>
@@ -36,4 +35,5 @@ class KinModule {
   yarp::os::Property armProperties;
   iDynTree::KinDynComputations kinDynCompute;
   yarp::sig::Vector jointsValues;
+  iDynTree::ModelLoader mdlLoader;
 };
