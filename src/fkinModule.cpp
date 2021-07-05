@@ -9,7 +9,6 @@
 
 #include <iCub/ctrl/math.h>
 #include <yarp/math/Math.h>
-#include <yarp/os/LogStream.h>
 #include <yarp/os/Property.h>
 #include <yarp/sig/Matrix.h>
 
@@ -18,12 +17,14 @@
 /**
  * Definitions of KinModule functions
  */
-KinModule::KinModule(const std::string& armType)
+KinModule::KinModule(const std::string& armType,
+                     const std::vector<std::string>& axesListValues)
     : arm(armType),
       armChain(),
       armProperties(),
       kinDynCompute(),
-      jointsValues() {}
+      jointsValues(),
+      axesList(axesListValues) {}
 
 KinModule::~KinModule() {}
 
@@ -34,22 +35,7 @@ bool KinModule::configure(const yarp::os::ResourceFinder& rf) {
   }
   auto modelPath = rf.find("model").asString();
 
-  std::vector<std::string> axesListValues;
-  // Torso
-  axesListValues.push_back("torso_pitch");
-  axesListValues.push_back("torso_yaw");
-  axesListValues.push_back("torso_roll");
-
-  // Left arm
-  axesListValues.push_back("l_shoulder_pitch");
-  axesListValues.push_back("l_shoulder_roll");
-  axesListValues.push_back("l_shoulder_yaw");
-  axesListValues.push_back("l_elbow");
-  axesListValues.push_back("l_wrist_prosup");
-  axesListValues.push_back("l_wrist_pitch");
-  axesListValues.push_back("l_wrist_yaw");
-
-  bool urdfLoaded = loadIDynTreeKinematicsFromUrdf(modelPath, axesListValues);
+  bool urdfLoaded = loadIDynTreeKinematicsFromUrdf(modelPath);
 
   if (!urdfLoaded) {
     return false;
@@ -82,8 +68,10 @@ bool KinModule::configure(const yarp::os::ResourceFinder& rf) {
 }
 
 bool KinModule::loadIDynTreeKinematicsFromUrdf(
-    const std::string& modelPath, const std::vector<std::string>& axesList) {
+    const std::string& modelPath) {
   bool ok = true;
+  iDynTree::ModelLoader mdlLoader;
+
   ok = mdlLoader.loadReducedModelFromFile(modelPath, axesList);
   ok = ok && kinDynCompute.loadRobotModel(mdlLoader.model());
 
