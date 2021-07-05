@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
   axesList.push_back("r_wrist_pitch");
   axesList.push_back("r_wrist_yaw");
 
-  KinModule mod("right_v2.5", axesList);
+  KinModule mod(axesList);
 
   if (!mod.configure(rf)) {
     return EXIT_FAILURE;

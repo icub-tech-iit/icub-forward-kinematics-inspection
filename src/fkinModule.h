@@ -25,13 +25,10 @@ class KinModule {
   /**
    * @brief Construct a new KinModule object
    *
-   * @param armType string containing the type of the arm desired. Syntax should
-   *                be "<type>_v<version number>", eg "left_v2.5".
    * @param axesListValues List of axes used by iDynTree to construct the
    *                       kinematic chain.
    */
-  explicit KinModule(const std::string& armType,
-                     const std::vector<std::string>& axesListValues);
+  explicit KinModule(const std::vector<std::string>& axesListValues);
 
   /**
    * @brief Destroy the Kin Module object

@@ -17,9 +17,8 @@
 /**
  * Definitions of KinModule functions
  */
-KinModule::KinModule(const std::string& armType,
-                     const std::vector<std::string>& axesListValues)
-    : arm(armType),
+KinModule::KinModule(const std::vector<std::string>& axesListValues)
+    : arm(),
       armChain(),
       armProperties(),
       kinDynCompute(),
@@ -40,6 +39,13 @@ bool KinModule::configure(const yarp::os::ResourceFinder& rf) {
   if (!urdfLoaded) {
     return false;
   }
+
+  if (!rf.check("arm")) {
+    std::cout << "Arm type not provided." << std::endl;
+    return false;
+  }
+
+  arm = iCub::iKin::iCubArm(rf.find("arm").asString());
 
   if (!rf.check("joints")) {
     std::cout << "Joints values not provided." << std::endl;
