@@ -10,8 +10,8 @@ We make use of [Gitpod Cloud IDE](https://gitpod.io) as infrastructure:
   [![](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/mfussi66/icub-forward-kinematics-inspection)
 
 ### ⚙ Build the project
+Move to the project folder, then on a terminal, type
 ```console
-cd /workspace/icub/forward-kinematics-inspection
 mkdir build && cd build
 cmake ..
 make && make install
@@ -20,4 +20,6 @@ make && make install
 ### 🔘 Run the project
 Running the project requires loading the URDF model of iCub 2.5, provided in the repository.
 
-To launch, move to the repository directory with `cd icub-forward-kinematic-inspection`, and run in a terminal `fkin --model model/model.urdf`.
+To run the project, you can use the script `test.sh`, which provides 4 joint configurations. 
+
+To use it, run on a terminal `./test.sh <model_path> <joint_cfg>`, where `model_path` is the path of the urdf file relative to the current folder, and `joint_cfg` can be either 1, 2, 3, 4.
