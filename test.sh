@@ -1,22 +1,23 @@
 #!/usr/bin/env bash
 
 # home position by icubsim - loose L shape
-if [[ $2 -eq 1 ]]; then 
-fkin --model $1 --arm right_v2.0 --joints "(0.0 0.0 0.0 0.0 0.0 0.0 60.5 0.0 0.0 0.0)"
+if [[ $1 -eq 1 ]]; then 
+fkin --model model/model_v2.0.urdf --arm right_v2.0 --joints "(0.0 0.0 0.0 0.0 0.0 0.0 60.5 0.0 0.0 0.0)"
 fi
 
 # Arm in L shape - 90deg elbow
-if [[ $2 -eq 2 ]]; then
-fkin --model $1 --arm right_v2.5 --joints "(0.0 0.0 0.0 0.0 0.0 0.0 90.5 0.0 0.0 0.0)"
+if [[ $1 -eq 2 ]]; then
+fkin --model model/model_v2.0.urdf --arm right_v2.5 --joints "(0.0 0.0 0.0 0.0 0.0 0.0 90.5 0.0 0.0 0.0)"
 fi
 
 # Arm in T-pose with palm facing forward
-if [[ $2 -eq 3 ]]; then
-fkin --model $1 --arm right_v2.7 --joints "(0 0 0 0 90 -30 15 0 0 0)"
+if [[ $1 -eq 3 ]]; then
+fkin --model model/model_v2.7.urdf --arm right_v2.7 --joints "(0 0 0 0 90 -30 15 0 0 0)"
 fi
+
 # Shoulder lift up with arm in L-shape and hand with negative pitch
-if [[ $2 -eq 4 ]]; then 
-fkin --model $1 --arm right_v2.5 --joints "(0.0 0.0 0.0 0.0 135.0 0.0 90.5 -90.0 -30.6 20.4)"
+if [[ $1 -eq 4 ]]; then 
+fkin --model model/model_v2.5.urdf --arm right_v2.5 --joints "(0.0 0.0 0.0 0.0 135.0 0.0 90.5 -90.0 -30.6 20.4)"
 fi
 
 

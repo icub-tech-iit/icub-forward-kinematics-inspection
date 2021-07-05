@@ -28,6 +28,17 @@ KinModule::KinModule(const std::vector<std::string>& axesListValues)
 KinModule::~KinModule() {}
 
 bool KinModule::configure(const yarp::os::ResourceFinder& rf) {
+  if (rf.check("help")) {
+    std::cout << "fkin arguments:" << std::endl
+              << "--model model_path" << std::endl
+              << "--arm arm_type" << std::endl
+              << "--joints \"(0.0 0.0 ... 0.0)\" - (deg)" << std::endl
+              << "Example: " << std::endl
+              << "./fkin --model model/model_v2.5.urdf --type right_v2.5 "
+              << "--joints \"(1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0 10.0)\"" << std::endl;
+    return false;
+  }
+
   if (!rf.check("model")) {
     std::cout << "URDF robot model not provided." << std::endl;
     return false;
