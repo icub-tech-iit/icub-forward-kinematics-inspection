@@ -70,16 +70,13 @@ RUN git clone https://github.com/robotology/robotology-superbuild.git --depth 1 
           -DROBOTOLOGY_ENABLE_DYNAMICS:BOOL=ON && make
 #    && cd ../.. && rm -Rf robotology-superbuild
 
-# Download and install fork of icub-main
-RUN git clone https://github.com/mfussi66/icub-main && \
-    cd icub-main && mkdir build && cd build && \
-    cmake .. \
-          -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-          -DENABLE_icubmod_cartesiancontrollerclient:BOOL=ON \
-          -DENABLE_icubmod_cartesiancontrollerserver:BOOL=ON \
-          -DENABLE_icubmod_gazecontrollerclient:BOOL=ON
+RUN cd /robotology-superbuild/src/ICUB
 
-RUN cd /
+# Download and build fork of icub-main
+RUN git remote add upstream https://github.com/mfussi66/icub-main && \
+    git pull upstream master
+
+RUN cd /robotology-superbuild/build/ && make
 
 # Clean up git configuration
 RUN git config --global --unset-all user.name && \
@@ -131,6 +128,6 @@ RUN git clone https://github.com/icub-tech-iit/icub-forward-kinematics-inspectio
     cmake .. \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
     -DiDynTree_DIR=/robotology-superbuild/build/install/lib/cmake/iDynTree && \
-    make && make install 
+    make && make install && cd ../../
 
 CMD ["bash"]
