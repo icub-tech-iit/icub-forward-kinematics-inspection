@@ -71,10 +71,9 @@ RUN git clone https://github.com/robotology/robotology-superbuild.git --depth 1 
           -DROBOTOLOGY_ENABLE_ROBOT_TESTING:BOOL=ON && make
 #    && cd ../.. && rm -Rf robotology-superbuild
 
-RUN cd /robotology-superbuild/src/ICUB
-
 # Download and build fork of icub-main
-RUN git remote add upstream https://github.com/mfussi66/icub-main && \
+RUN cd /robotology-superbuild/src/ICUB && \
+    git remote add upstream https://github.com/mfussi66/icub-main.git && \
     git pull upstream master
 
 RUN cd /robotology-superbuild/build/ && make
