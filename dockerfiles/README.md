@@ -16,18 +16,9 @@ To run the sandbox locally using [Docker](https://docs.docker.com/get-docker), g
     ```console
     start-vnc-session.sh
     ```
-4. Clone and install the project:
-    ```console
-    git clone https://github.com/robotology/icub-gazebo-grasping-sandbox.git /workspace/icub-gazebo-grasping-sandbox
-    cd /workspace/icub-gazebo-grasping-sandbox 
-    mkdir build && cd build
-    cmake ../
-    sudo make install
-    ```
-5. Open up the browser and connect to **`localhost:6080`** to get to the workspace desktop GUI.
-6.  In the desktop GUI, open a terminal and run the grasping experiment:
-   ```console
-   icub-grasp.sh
-   ```
-11. Once done, from the container shell press **CTRL+D**.
+4. Open up the browser and connect to **`localhost:6080`** to get to the workspace desktop GUI.
+
+5. On a terminal, either in the desktop GUI or the container shell, navigate to the project folder by typing `cd /workspace/icub-forward-kinematics-inspection` . The project should already be compiled and ready to run.
+
+5.  Once done, from the container shell press **CTRL+D** to exit.
 

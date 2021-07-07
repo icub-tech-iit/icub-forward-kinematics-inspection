@@ -67,7 +67,8 @@ RUN git clone https://github.com/robotology/robotology-superbuild.git --depth 1 
           -DYCM_EP_INSTALL_DIR=${ROBOTOLOGY_SUPERBUILD_INSTALL_DIR} \
           -DROBOTOLOGY_ENABLE_CORE:BOOL=ON \
           -DROBOTOLOGY_USES_GAZEBO:BOOL=ON \
-          -DROBOTOLOGY_ENABLE_DYNAMICS:BOOL=ON && make
+          -DROBOTOLOGY_ENABLE_DYNAMICS:BOOL=ON \
+          -DROBOTOLOGY_ENABLE_ROBOT_TESTING:BOOL=ON && make
 #    && cd ../.. && rm -Rf robotology-superbuild
 
 RUN cd /robotology-superbuild/src/ICUB
