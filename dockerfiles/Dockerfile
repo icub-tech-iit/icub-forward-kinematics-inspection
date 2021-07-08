@@ -80,7 +80,7 @@ RUN git config --global --unset-all user.name && \
 # Build package containing forward kinematics inspection
 RUN git clone https://github.com/icub-tech-iit/icub-forward-kinematics-inspection.git && \
     cd icub-forward-kinematics-inspection && mkdir build && cd build && \
-    source ${ROBOTOLOGY_SUPERBUILD_INSTALL_DIR}/share/robotology-superbuild/setup.sh && \
+    sh -c 'source ${ROBOTOLOGY_SUPERBUILD_INSTALL_DIR}/share/robotology-superbuild/setup.sh' && \
     cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} && \
     make install
 
