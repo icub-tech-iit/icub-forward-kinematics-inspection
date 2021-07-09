@@ -71,7 +71,8 @@ RUN cd /robotology-superbuild/src/ICUB && \
     git remote add upstream https://github.com/mfussi66/icub-main.git && \
     git pull upstream master && \
     cd /robotology-superbuild/build/ && \
-    make
+    make && \
+    cd ../.. && rm -Rf robotology-superbuild
 
 # Clean up git configuration
 RUN git config --global --unset-all user.name && \
