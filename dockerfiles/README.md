@@ -19,11 +19,10 @@ To run the sandbox locally using [Docker](https://docs.docker.com/get-docker), g
     start-vnc-session.sh
     ```
 4. Open up the browser and connect to **`localhost:6080`** to get to the workspace desktop GUI.
-
-5. Tu launch the red-ball test, do:
+5. You can now run the `fkin` executable.
+6. To launch the red-ball test, do:
    ```console
    cd /robotology-superbuild/src/icub-tests/suites
    robottestingframework-testrunner --verbose --suite demoRedBall-icubSim.xml
    ```
-
-6.  Once done, from the container shell press **CTRL+D** to exit.
+7.  Once done, from the container shell press **CTRL+D** to exit.
