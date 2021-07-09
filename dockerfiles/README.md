@@ -20,7 +20,7 @@ Make sure you have [Docker](https://docs.docker.com/get-docker) available on you
     ```
 4. Open up the browser and connect to **`localhost:6080`** to get to the workspace desktop GUI.
 5. You can now run the `fkin` executable.
-6. To launch the red-ball test, do:
+6. To launch the red-ball test, make sure that `yarpserver` is running and then do:
    ```console
    cd /robotology-superbuild/src/icub-tests/suites
    robottestingframework-testrunner --verbose --suite demoRedBall-icubSim.xml
