@@ -50,6 +50,7 @@ RUN sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb
 ARG ROBOTOLOGY_SUPERBUILD_RELEASE
 ARG BUILD_TYPE
 ARG ROBOTOLOGY_SUPERBUILD_INSTALL_DIR=/usr/local
+ARG FORK=mfussi66/icub-main
 
 # Set up git (required by superbuild)
 RUN git config --global user.name "GitHub Actions" && \
@@ -68,7 +69,7 @@ RUN git clone https://github.com/robotology/robotology-superbuild.git --depth 1 
 
 # Download and build fork of icub-main
 RUN cd /robotology-superbuild/src/ICUB && \
-    git remote add fork https://github.com/mfussi66/icub-main.git && \
+    git remote add fork https://github.com/${FORK}.git && \
     git fetch fork && \
     git checkout -b fork-master --track fork/master && \
     cd /robotology-superbuild/build/ && \
