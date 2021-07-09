@@ -22,5 +22,11 @@ To run the sandbox locally using [Docker](https://docs.docker.com/get-docker), g
 
 5. On a terminal, either in the desktop GUI or the container shell, navigate to the project folder by typing `cd /workspace/icub-forward-kinematics-inspection` . The project should already be compiled and ready to run.
 
-5.  Once done, from the container shell press **CTRL+D** to exit.
+6. Tu launch the red-ball test, do:
+   ```console
+   cd /robotology-superbuild/src/icub-tests/suites
+   robottestingframework-testrunner --verbose --suite demoRedBall-icubSim.xml
+   ```
+
+7.  Once done, from the container shell press **CTRL+D** to exit.
 
