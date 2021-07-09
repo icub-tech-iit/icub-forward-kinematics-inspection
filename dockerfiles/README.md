@@ -12,7 +12,7 @@ To run the sandbox locally using [Docker](https://docs.docker.com/get-docker), g
    ```
 2. Launch the container:
     ```console
-    docker run -it -p 6080:6080 --name <container_name> icub-fkin-inspection
+    docker run -it -p 6080:6080 icub-fkin-inspection
     ```
 3. From within the container shell, launch the following scripts:
     ```console
