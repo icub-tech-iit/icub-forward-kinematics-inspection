@@ -12,7 +12,7 @@ RUN apt update
 
 # Install essentials
 RUN apt install -y apt-utils software-properties-common apt-transport-https sudo \
-    psmisc lsb-release tmux nano wget curl telnet gnupg build-essential gdb git gitk \
+    psmisc lsb-release tmux nano wget curl gedit build-essential gdb git gitk \
     cmake cmake-curses-gui autoconf locales gdebi terminator meld dos2unix bash-completion
 
 # Set the locale
