@@ -1,7 +1,7 @@
 🐳 Instructions to run the docker container
 ============================================
 
-To run the sandbox locally using [Docker](https://docs.docker.com/get-docker), go through the following steps:
+Make sure you have [Docker](https://docs.docker.com/get-docker) available on your sytem; then, go through the following steps:
 
 1. Build the docker image:
    ```console
