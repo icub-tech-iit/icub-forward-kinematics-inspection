@@ -69,7 +69,8 @@ RUN git clone https://github.com/robotology/robotology-superbuild.git --depth 1 
 # Download and build fork of icub-main
 RUN cd /robotology-superbuild/src/ICUB && \
     git remote add fork https://github.com/mfussi66/icub-main.git && \
-    git pull fork master && \
+    git fetch fork && \
+    git checkout -b fork-master --track fork/master && \
     cd /robotology-superbuild/build/ && \
     make && \
     cd ../.. && rm -Rf robotology-superbuild
