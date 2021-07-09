@@ -6,11 +6,13 @@ To run the sandbox locally using [Docker](https://docs.docker.com/get-docker), g
 1. Build the docker image:
    ```console
    cd dockerfiles
-   docker build -f Dockerfile . --build-arg ROBOTOLOGY_SUPERBUILD_RELEASE=releases/2021.05 --build-arg BUILD_TYPE=Release
+   docker build . --build-arg ROBOTOLOGY_SUPERBUILD_RELEASE=releases/2021.05 \
+                  --build-arg BUILD_TYPE=Release \
+                  --tag icub-fkin-inspection
    ```
 2. Launch the container:
     ```console
-    docker run -it -p 6080:6080 --user gitpod <container friendly name>
+    docker run -it -p 6080:6080 --name <container_name> icub-fkin-inspection
     ```
 3. From within the container shell, launch the following scripts:
     ```console
