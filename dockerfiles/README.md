@@ -6,9 +6,7 @@ Make sure you have [Docker](https://docs.docker.com/get-docker) available on you
 1. Build the docker image:
    ```console
    cd dockerfiles
-   docker build . --build-arg ROBOTOLOGY_SUPERBUILD_RELEASE=releases/2021.05 \
-                  --build-arg BUILD_TYPE=Release \
-                  --tag icub-fkin-inspection
+   docker build . --build-arg ROBOTOLOGY_SUPERBUILD_RELEASE=releases/2021.05 --tag icub-fkin-inspection
    ```
 2. Launch the container:
     ```console
