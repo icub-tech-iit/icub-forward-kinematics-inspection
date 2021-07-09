@@ -48,7 +48,7 @@ RUN sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb
 
 # Select options
 ARG ROBOTOLOGY_SUPERBUILD_RELEASE
-ARG BUILD_TYPE
+ARG BUILD_TYPE=Release
 ARG ROBOTOLOGY_SUPERBUILD_INSTALL_DIR=/usr/local
 ARG FORK=mfussi66/icub-main
 
