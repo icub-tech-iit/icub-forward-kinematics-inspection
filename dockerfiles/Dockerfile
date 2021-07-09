@@ -63,6 +63,7 @@ RUN git clone https://github.com/robotology/robotology-superbuild.git --depth 1 
           -DYCM_EP_INSTALL_DIR=${ROBOTOLOGY_SUPERBUILD_INSTALL_DIR} \
           -DROBOTOLOGY_ENABLE_CORE:BOOL=ON \
           -DROBOTOLOGY_ENABLE_DYNAMICS:BOOL=ON \
+          -DROBOTOLOGY_ENABLE_BASIC_DEMOS:BOOL=ON \
           -DROBOTOLOGY_ENABLE_ROBOT_TESTING:BOOL=ON && make
 
 # Download and build fork of icub-main
@@ -71,8 +72,7 @@ RUN cd /robotology-superbuild/src/ICUB && \
     git fetch fork && \
     git checkout -b fork-master --track fork/master && \
     cd /robotology-superbuild/build/ && \
-    make && \
-    cd ../.. && rm -Rf robotology-superbuild
+    make
 
 # Clean up git configuration
 RUN git config --global --unset-all user.name && \
@@ -90,7 +90,8 @@ ENV DISPLAY=:1
 
 # Set up .bashrc
 RUN echo "source /etc/profile.d/bash_completion.sh" >> /root/.bashrc && \
-    echo "source ${ROBOTOLOGY_SUPERBUILD_INSTALL_DIR}/share/robotology-superbuild/setup.sh" >> /root/.bashrc
+    echo "source ${ROBOTOLOGY_SUPERBUILD_INSTALL_DIR}/share/robotology-superbuild/setup.sh" >> /root/.bashrc && \
+    echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/robotology-superbuild/build/src/icub-tests/plugins" >> /root/.bashrc
 
 # Set up script to launch graphics and vnc
 COPY start-vnc-session.sh /usr/bin/start-vnc-session.sh
