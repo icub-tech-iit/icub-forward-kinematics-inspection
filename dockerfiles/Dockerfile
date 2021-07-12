@@ -91,8 +91,7 @@ ENV DISPLAY=:1
 
 # Set up .bashrc
 RUN echo "source /etc/profile.d/bash_completion.sh" >> /root/.bashrc && \
-    echo "source ${ROBOTOLOGY_SUPERBUILD_INSTALL_DIR}/share/robotology-superbuild/setup.sh" >> /root/.bashrc && \
-    echo "export LD_LIBRARY_PATH=\${LD_LIBRARY_PATH}:/robotology-superbuild/build/src/icub-tests/plugins" >> /root/.bashrc
+    echo "source ${ROBOTOLOGY_SUPERBUILD_INSTALL_DIR}/share/robotology-superbuild/setup.sh" >> /root/.bashrc
 
 # Set up script to launch graphics and vnc
 COPY start-vnc-session.sh /usr/bin/start-vnc-session.sh
