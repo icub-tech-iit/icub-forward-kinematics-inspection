@@ -1,5 +1,5 @@
 
-DHsource = readtable('resources/icubarm_source_dhparams.csv');
+DHsource = readtable('resources/icubarm_right_source_dhparams.csv');
 DHsource.Properties.VariableNames = {'a', 'd', 'alpha', 'offset', 'min', 'max', 'n'};
 RobotSource = Revolute('d', DHsource.d(1), 'a', DHsource.a(1), 'alpha', deg2rad(DHsource.alpha(1)), 'offset', deg2rad(DHsource.offset(1)));
 for i=2:height(DHsource)
@@ -12,7 +12,7 @@ RobotSource.base = [0	-1	0	0;
                     0	0	0	1];
 RobotSource.tool = eye(4);
 
-DHidyn = readtable('resources/icubgenova02_urdf_dhparams.csv');
+DHidyn = readtable('resources/icubarm_right_urdf_dhparams.csv');
 DHidyn.Properties.VariableNames = {'a', 'd', 'alpha', 'offset', 'min', 'max'};
 RobotIDyn = Revolute('d', DHidyn.d(1), 'a', DHidyn.a(1), 'alpha', deg2rad(DHidyn.alpha(1)), 'offset', deg2rad(DHidyn.offset(1)));
 for i=2:height(DHsource)
@@ -20,7 +20,7 @@ for i=2:height(DHsource)
 end
 RobotIDyn.name = 'iDynTree';
 
-homtable = readtable('resources/icubgenova02_urdf_h0_hn.txt');
+homtable = readtable('resources/icubarm_right_urdf_h0_hn.txt');
 h = zeros(4,4);
 k = 2;
 for i=1:4
@@ -49,7 +49,7 @@ qdes6 = [25 10 -9.6, 9.45 160.80 79.56 19.005 0 0 0.6];
 qdes7 = [25 -15 -9.6, 9.45 160.80 79.56 19.005 0 0 5];
 qdes8 = [-25 30 -9.6, 9.45 160.80 79.56 19.005 0 10 5];
 
-Q = deg2rad(qdes4);
+Q = deg2rad(qdes2);
 RobotIDyn.display
 RobotIDyn.fkine(Q)
 
