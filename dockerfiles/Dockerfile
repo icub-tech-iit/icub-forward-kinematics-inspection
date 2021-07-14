@@ -93,6 +93,10 @@ ENV DISPLAY=:1
 RUN echo "source /etc/profile.d/bash_completion.sh" >> /root/.bashrc && \
     echo "source ${ROBOTOLOGY_SUPERBUILD_INSTALL_DIR}/share/robotology-superbuild/setup.sh" >> /root/.bashrc
 
+COPY cartesianSolver.ini /usr/local/share/iCub/contexts/simCartesianControl
+COPY left_arm_cartesian.xml /usr/local/share/iCub/contexts/simCartesianControl/cartesian
+COPY right_arm_cartesian.xml /usr/local/share/iCub/contexts/simCartesianControl/cartesian
+
 # Set up script to launch graphics and vnc
 COPY start-vnc-session.sh /usr/bin/start-vnc-session.sh
 RUN chmod +x /usr/bin/start-vnc-session.sh && \
