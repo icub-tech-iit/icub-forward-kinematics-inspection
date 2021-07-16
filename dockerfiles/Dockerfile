@@ -65,7 +65,7 @@ RUN git clone https://github.com/robotology/robotology-superbuild.git --depth 1 
           -DROBOTOLOGY_ENABLE_CORE:BOOL=ON \
           -DROBOTOLOGY_ENABLE_DYNAMICS:BOOL=ON \
           -DROBOTOLOGY_ENABLE_ICUB_BASIC_DEMOS:BOOL=ON \
-          -DROBOTOLOGY_ENABLE_ROBOT_TESTING:BOOL=ON && make
+          -DROBOTOLOGY_ENABLE_ROBOT_TESTING:BOOL=ON && make update-all
 
 # Download and build fork of icub-main
 RUN cd /robotology-superbuild/src/ICUB && \
