@@ -48,9 +48,9 @@ RUN sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb
 
 # Select options
 ARG ROBOTOLOGY_SUPERBUILD_RELEASE
+ARG ICUB_MAIN_FORK
 ARG BUILD_TYPE=Release
 ARG ROBOTOLOGY_SUPERBUILD_INSTALL_DIR=/usr/local
-ARG FORK=mfussi66/icub-main
 
 # Set up git (required by superbuild)
 RUN git config --global user.name "GitHub Actions" && \
@@ -67,7 +67,7 @@ RUN git clone https://github.com/robotology/robotology-superbuild.git --depth 1 
           -DROBOTOLOGY_ENABLE_ICUB_BASIC_DEMOS:BOOL=ON \
           -DROBOTOLOGY_ENABLE_ROBOT_TESTING:BOOL=ON \
           -DICUB_TAG=master \
-          -DICUB_REPOSITORY=${FORK}.git && \
+          -DICUB_REPOSITORY=${ICUB_MAIN_FORK}.git && \
           make
 
 # Clean up git configuration
