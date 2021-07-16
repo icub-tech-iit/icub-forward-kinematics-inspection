@@ -56,7 +56,7 @@ ARG FORK=mfussi66/icub-main
 RUN git config --global user.name "GitHub Actions" && \
     git config --global user.email "actions@github.com"
 
-# Build robotology-superbuild
+# Build robotology-superbuild w/ the specified fork of icub-main
 RUN git clone https://github.com/robotology/robotology-superbuild.git --depth 1 --branch ${ROBOTOLOGY_SUPERBUILD_RELEASE} && \
     cd robotology-superbuild && mkdir build && cd build && \
     cmake .. \
@@ -65,15 +65,10 @@ RUN git clone https://github.com/robotology/robotology-superbuild.git --depth 1 
           -DROBOTOLOGY_ENABLE_CORE:BOOL=ON \
           -DROBOTOLOGY_ENABLE_DYNAMICS:BOOL=ON \
           -DROBOTOLOGY_ENABLE_ICUB_BASIC_DEMOS:BOOL=ON \
-          -DROBOTOLOGY_ENABLE_ROBOT_TESTING:BOOL=ON && make update-all
-
-# Download and build fork of icub-main
-RUN cd /robotology-superbuild/src/ICUB && \
-    git remote add fork https://github.com/${FORK}.git && \
-    git fetch fork && \
-    git checkout -b fork-master --track fork/master && \
-    cd /robotology-superbuild/build/ && \
-    make
+          -DROBOTOLOGY_ENABLE_ROBOT_TESTING:BOOL=ON \
+          -DICUB_TAG=master \
+          -DICUB_REPOSITORY=${FORK}.git && \
+          make
 
 # Clean up git configuration
 RUN git config --global --unset-all user.name && \
